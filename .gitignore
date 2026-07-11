@@ -11,5 +11,6 @@
 local.properties
 .kotlin/
 .vscode/
+.cursor/
 FuelCheck.apk
 *.apk
