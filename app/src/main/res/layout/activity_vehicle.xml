@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fuel_bg"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/screen_padding_horizontal"
+    android:paddingTop="12dp"
+    android:paddingBottom="@dimen/screen_padding_bottom">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="start|center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cd_back"
+            android:padding="12dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_back"
+            android:tint="@color/fuel_text" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/vehicle_title"
+            android:textColor="@color/fuel_text"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </FrameLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:clipToPadding="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="12dp">
+
+            <TextView
+                android:id="@+id/subtitleText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/vehicle_subtitle"
+                android:textColor="@color/fuel_muted"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/carsLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/your_cars"
+                android:textAllCaps="true"
+                android:textColor="@color/fuel_section_label"
+                android:textSize="12sp"
+                android:letterSpacing="0.08" />
+
+            <HorizontalScrollView
+                android:id="@+id/carsScroll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:scrollbars="none">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/carsChipGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:singleSelection="true"
+                    app:selectionRequired="true"
+                    app:singleLine="true" />
+            </HorizontalScrollView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addCarButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="12dp"
+                android:text="@string/action_add_car"
+                android:textAllCaps="false"
+                android:textColor="@color/fuel_primary"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/fuel_primary"
+                app:strokeWidth="1.5dp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/carNameLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:hint="@string/label_car_name"
+                app:boxBackgroundColor="@color/fuel_surface"
+                app:boxStrokeColor="@color/text_input_box_stroke"
+                app:hintTextColor="@color/fuel_muted">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/carNameInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords"
+                    android:imeOptions="actionNext"
+                    android:maxLines="1"
+                    android:textColor="@color/fuel_text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/consumptionLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:hint="@string/label_consumption"
+                app:boxBackgroundColor="@color/fuel_surface"
+                app:boxStrokeColor="@color/text_input_box_stroke"
+                app:hintTextColor="@color/fuel_muted"
+                app:suffixText="@string/suffix_l_per_100km"
+                app:suffixTextColor="@color/fuel_muted">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/consumptionInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:imeOptions="actionNext"
+                    android:textColor="@color/fuel_text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tankCapacityLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:hint="@string/label_tank_capacity"
+                app:boxBackgroundColor="@color/fuel_surface"
+                app:boxStrokeColor="@color/text_input_box_stroke"
+                app:hintTextColor="@color/fuel_muted"
+                app:suffixText="@string/suffix_liters"
+                app:suffixTextColor="@color/fuel_muted">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/tankCapacityInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:imeOptions="actionNext"
+                    android:textColor="@color/fuel_text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/currentKmLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:hint="@string/label_current_km"
+                android:visibility="gone"
+                app:boxBackgroundColor="@color/fuel_surface"
+                app:boxStrokeColor="@color/text_input_box_stroke"
+                app:hintTextColor="@color/fuel_muted"
+                app:suffixText="@string/suffix_km"
+                app:suffixTextColor="@color/fuel_muted">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/currentKmInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:imeOptions="actionDone"
+                    android:textColor="@color/fuel_text" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/fullTankNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/full_tank_note"
+                android:textColor="@color/fuel_muted"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/saveButton"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="@color/fuel_primary"
+                android:text="@string/action_save_vehicle"
+                android:textAllCaps="false"
+                android:textColor="@color/fuel_on_primary"
+                android:textSize="16sp"
+                app:cornerRadius="12dp" />
+
+            <TextView
+                android:id="@+id/formError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:textColor="@color/fuel_error"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/statusMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:textColor="@color/fuel_primary"
+                android:textSize="15sp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/resetButton"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/action_reset_app"
+        android:textAllCaps="false"
+        android:textColor="@color/fuel_error"
+        app:cornerRadius="12dp"
+        app:strokeColor="@color/fuel_error"
+        app:strokeWidth="1.5dp" />
+</LinearLayout>
