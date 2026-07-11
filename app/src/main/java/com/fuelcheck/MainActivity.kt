@@ -367,6 +367,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startGpsTracking() {
+        if (!isLocationEnabled()) {
+            binding.formError.text = getString(R.string.gps_unavailable)
+            binding.formError.visibility = View.VISIBLE
+            return
+        }
+
+        val baseline = resolveOdometerForGps()
+        if (baseline == null) {
+            binding.formError.text = getString(R.string.gps_need_odometer)
+            binding.formError.visibility = View.VISIBLE
+            return
+        }
+        prefs.edit()
+            .putFloat(TripTrackingService.KEY_GPS_BASELINE_KM, baseline.toFloat())
+            .commit()
+
         gpsTracking = true
         showTrackingActiveUi(0.0)
         TripTrackingService.start(this)
@@ -376,6 +392,9 @@ class MainActivity : AppCompatActivity() {
         if (TripTrackingService.isRunning) {
             gpsTracking = true
             showTrackingActiveUi(TripTrackingService.currentMeters)
+        } else if (gpsTracking) {
+            gpsTracking = false
+            resetGpsButtonUi()
         }
     }
 
@@ -392,6 +411,13 @@ class MainActivity : AppCompatActivity() {
         binding.gpsButton.contentDescription = getString(R.string.cd_gps_stop)
     }
 
+    private fun resetGpsButtonUi() {
+        binding.gpsButton.setColorFilter(
+            ContextCompat.getColor(this, R.color.fuel_primary)
+        )
+        binding.gpsButton.contentDescription = getString(R.string.cd_gps)
+    }
+
     private fun onTrackingUpdate(meters: Double) {
         gpsTracking = true
         showTrackingActiveUi(meters)
@@ -399,42 +425,80 @@ class MainActivity : AppCompatActivity() {
 
     private fun onTrackingStopped(meters: Double, applyDistance: Boolean) {
         gpsTracking = false
-        binding.gpsButton.setColorFilter(
-            ContextCompat.getColor(this, R.color.fuel_primary)
-        )
-        binding.gpsButton.contentDescription = getString(R.string.cd_gps)
+        resetGpsButtonUi()
 
-        // Clear any persisted pending distance; this UI path owns the apply.
-        prefs.edit().remove(TripTrackingService.KEY_PENDING_GPS_KM).apply()
-
-        val km = meters / 1000.0
-
-        if (!applyDistance || km < MIN_APPLY_KM) {
+        if (!applyDistance) {
+            clearGpsTripState()
             binding.gpsStatus.visibility = View.GONE
             return
         }
 
-        applyGpsKilometers(km)
+        // Pending is written with commit() before this broadcast. Consuming it applies once.
+        // If onStart already consumed it, baseline is cleared and we must not apply again.
+        if (tryApplyPendingGpsKilometers()) {
+            return
+        }
+
+        val baselineStillOpen = !prefs.getFloat(
+            TripTrackingService.KEY_GPS_BASELINE_KM,
+            Float.NaN
+        ).isNaN()
+        val km = meters / 1000.0
+        if (baselineStillOpen && km >= MIN_APPLY_KM) {
+            applyGpsKilometers(km)
+        } else if (!baselineStillOpen) {
+            // Already applied via pending onStart — leave gps_added status as-is.
+        } else {
+            binding.gpsStatus.visibility = View.GONE
+        }
+        clearGpsTripState()
     }
 
     private fun applyPendingGpsKilometersIfNeeded() {
         if (gpsTracking || TripTrackingService.isRunning) return
+        tryApplyPendingGpsKilometers()
+    }
+
+    /**
+     * Atomically consume pending GPS km (if any) and apply once.
+     * @return true if a pending value was present and consumed
+     */
+    private fun tryApplyPendingGpsKilometers(): Boolean {
         val pending = prefs.getFloat(TripTrackingService.KEY_PENDING_GPS_KM, Float.NaN)
-        if (pending.isNaN() || pending < MIN_APPLY_KM.toFloat()) return
-        prefs.edit().remove(TripTrackingService.KEY_PENDING_GPS_KM).apply()
+        if (pending.isNaN()) return false
+
+        prefs.edit()
+            .remove(TripTrackingService.KEY_PENDING_GPS_KM)
+            .commit()
+
+        if (pending < MIN_APPLY_KM.toFloat()) {
+            clearGpsTripState()
+            binding.gpsStatus.visibility = View.GONE
+            return true
+        }
+
         applyGpsKilometers(pending.toDouble())
+        clearGpsTripState()
+        return true
+    }
+
+    private fun clearGpsTripState() {
+        prefs.edit()
+            .remove(TripTrackingService.KEY_PENDING_GPS_KM)
+            .remove(TripTrackingService.KEY_GPS_BASELINE_KM)
+            .commit()
     }
 
     private fun applyGpsKilometers(km: Double) {
-        val currentKm = resolveOdometerForGps()
-        if (currentKm == null) {
+        val baseline = resolveGpsBaselineKm()
+        if (baseline == null) {
             binding.gpsStatus.visibility = View.GONE
             binding.formError.text = getString(R.string.gps_need_odometer)
             binding.formError.visibility = View.VISIBLE
             return
         }
 
-        val newOdometer = currentKm + km
+        val newOdometer = baseline + km
         binding.currentKmInput.setText(formatStoredNumber(newOdometer))
         binding.currentKmLayout.error = null
         binding.gpsStatus.text = getString(R.string.gps_added, km)
@@ -447,6 +511,15 @@ class MainActivity : AppCompatActivity() {
         if (hasVehicle) {
             calculate()
         }
+    }
+
+    /** Baseline saved when GPS started; falls back to current/last-fuel odometer. */
+    private fun resolveGpsBaselineKm(): Double? {
+        val saved = prefs.getFloat(TripTrackingService.KEY_GPS_BASELINE_KM, Float.NaN)
+        if (!saved.isNaN() && saved > 0f) {
+            return saved.toDouble()
+        }
+        return resolveOdometerForGps()
     }
 
     /**
