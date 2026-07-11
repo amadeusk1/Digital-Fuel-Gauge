@@ -2,6 +2,8 @@ package com.fuelcheck
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -19,6 +21,7 @@ class FuelAddedActivity : AppCompatActivity() {
     private lateinit var prefs: android.content.SharedPreferences
 
     private var lastFullLocked = false
+    private var fullTankSelected = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,23 +30,34 @@ class FuelAddedActivity : AppCompatActivity() {
 
         prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         restoreSavedValues()
+        updateFullTankButton()
 
         binding.backButton.setOnClickListener { finish() }
 
-        binding.fueledUpButton.setOnClickListener {
+        binding.fullTankButton.setOnClickListener {
             hideKeyboard()
-            fullTankAdded()
+            setFullTankSelected(!fullTankSelected)
         }
 
-        binding.addLitersButton.setOnClickListener {
+        binding.addFuelButton.setOnClickListener {
             hideKeyboard()
-            addLitersToTank()
+            submitFuel()
         }
+
+        binding.litersAddedInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+            override fun afterTextChanged(s: Editable?) {
+                if (!s.isNullOrBlank() && fullTankSelected) {
+                    setFullTankSelected(false)
+                }
+            }
+        })
 
         binding.litersAddedInput.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 hideKeyboard()
-                addLitersToTank()
+                submitFuel()
                 true
             } else {
                 false
@@ -60,6 +74,45 @@ class FuelAddedActivity : AppCompatActivity() {
             lastFullLocked = false
         }
         applyLastFullLockState()
+    }
+
+    private fun setFullTankSelected(selected: Boolean) {
+        fullTankSelected = selected
+        if (selected) {
+            binding.litersAddedLayout.error = null
+            binding.litersAddedInput.setText("")
+            binding.litersAddedInput.clearFocus()
+        }
+        updateFullTankButton()
+    }
+
+    private fun updateFullTankButton() {
+        if (fullTankSelected) {
+            binding.fullTankButton.setBackgroundColor(
+                ContextCompat.getColor(this, R.color.fuel_primary)
+            )
+            binding.fullTankButton.setTextColor(
+                ContextCompat.getColor(this, R.color.fuel_on_primary)
+            )
+            binding.fullTankButton.strokeWidth = 0
+        } else {
+            binding.fullTankButton.setBackgroundColor(
+                ContextCompat.getColor(this, android.R.color.transparent)
+            )
+            binding.fullTankButton.setTextColor(
+                ContextCompat.getColor(this, R.color.fuel_primary)
+            )
+            binding.fullTankButton.strokeWidth =
+                (1.5f * resources.displayMetrics.density).toInt()
+        }
+    }
+
+    private fun submitFuel() {
+        if (fullTankSelected) {
+            fullTankAdded()
+        } else {
+            addLitersToTank()
+        }
     }
 
     private fun fullTankAdded() {
@@ -88,11 +141,22 @@ class FuelAddedActivity : AppCompatActivity() {
             .putBoolean(KEY_LAST_FULL_LOCKED, true)
             .apply()
 
+        FuelLogStore.add(
+            prefs,
+            FuelLogEntry(
+                timestampMs = System.currentTimeMillis(),
+                odometerKm = currentKm,
+                litersAdded = tankCapacity.toDouble(),
+                remainingLiters = tankCapacity.toDouble(),
+                isFullTank = true
+            )
+        )
+
         lastFullLocked = true
         applyLastFullLockState()
 
-        binding.statusMessage.text = getString(R.string.status_full_tank, tankCapacity.toDouble())
-        binding.statusMessage.visibility = View.VISIBLE
+        setResult(RESULT_OK)
+        finish()
     }
 
     private fun addLitersToTank() {
@@ -156,14 +220,22 @@ class FuelAddedActivity : AppCompatActivity() {
             .putFloat(KEY_LAST_REMAINING_PCT, percent.toFloat())
             .apply()
 
+        FuelLogStore.add(
+            prefs,
+            FuelLogEntry(
+                timestampMs = System.currentTimeMillis(),
+                odometerKm = currentKm,
+                litersAdded = added,
+                remainingLiters = newRemaining,
+                isFullTank = false
+            )
+        )
+
         lastFullLocked = true
         applyLastFullLockState()
 
-        binding.statusMessage.text = getString(R.string.status_added, added, newRemaining)
-        binding.statusMessage.visibility = View.VISIBLE
-
-        binding.litersAddedInput.text = null
-        binding.litersAddedLayout.error = null
+        setResult(RESULT_OK)
+        finish()
     }
 
     private fun applyLastFullLockState() {
@@ -181,9 +253,8 @@ class FuelAddedActivity : AppCompatActivity() {
         } else {
             null
         }
-        binding.fueledUpButton.isEnabled = true
-        binding.addLitersButton.isEnabled = true
-        binding.addLitersButton.alpha = 1f
+        binding.addFuelButton.isEnabled = true
+        binding.fullTankButton.isEnabled = true
         binding.litersAddedInput.isEnabled = true
     }
 

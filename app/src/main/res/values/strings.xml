@@ -21,12 +21,25 @@
 
     <string name="action_calculate">Calculate</string>
     <string name="action_fuel_added">Add fuel</string>
-    <string name="action_fueled_up">Full tank added</string>
-    <string name="action_add_liters">Add liters</string>
+    <string name="days_since_fuel_today">0 days since last fuel up</string>
+    <string name="days_since_fuel_one">1 day since last fuel up</string>
+    <string name="days_since_fuel">%1$d days since last fuel up</string>
+    <string name="action_full_tank">Full tank</string>
     <string name="cd_gas_stations">Open GasBuddy</string>
+    <string name="cd_log">Fuel log</string>
     <string name="cd_gps">Track kilometres with GPS</string>
     <string name="cd_gps_stop">Stop GPS tracking and add kilometres</string>
     <string name="cd_back">Back</string>
+
+    <string name="log_title">Fuel Log</string>
+    <string name="log_empty">No fuel entries yet.\nAdd fuel to start your log.</string>
+    <string name="log_type_full">Full tank</string>
+    <string name="log_type_partial">Partial fill</string>
+    <string name="log_label_date">Date</string>
+    <string name="log_label_fuel_added">Fuel added</string>
+    <string name="log_label_odometer">Odometer</string>
+    <string name="log_value_fuel_added">%1$.1f L</string>
+    <string name="log_value_odometer">%1$.0f km</string>
 
     <string name="gps_tracking">GPS tracking · +%1$.1f km</string>
     <string name="gps_added">Added %1$.1f km from GPS</string>
@@ -36,7 +49,7 @@
     <string name="gps_waiting">GPS tracking · waiting for signal…</string>
 
     <string name="fuel_added_title">Fuel Added</string>
-    <string name="fuel_added_subtitle">Log a partial fill or a full tank.</string>
+    <string name="fuel_added_subtitle">Enter liters added, or choose full tank, then press Add fuel.</string>
 
     <string name="status_empty">Calculate to update fuel status</string>
     <string name="status_liters">%1$.1f L remaining</string>
