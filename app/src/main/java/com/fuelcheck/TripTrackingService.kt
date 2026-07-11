@@ -1,5 +1,6 @@
 package com.fuelcheck
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
@@ -8,6 +9,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.location.Location
 import android.os.Build
@@ -48,22 +50,43 @@ class TripTrackingService : Service() {
             ACTION_STOP -> {
                 applyDistanceOnStop = intent.getBooleanExtra(EXTRA_APPLY_DISTANCE, true)
                 stopTracking()
-                return START_NOT_STICKY
             }
             else -> {
                 if (!isRunning) {
+                    if (!hasLocationPermission()) {
+                        sendBroadcast(
+                            Intent(ACTION_STOPPED).apply {
+                                setPackage(packageName)
+                                putExtra(EXTRA_METERS, 0.0)
+                                putExtra(EXTRA_APPLY_DISTANCE, false)
+                            }
+                        )
+                        stopSelf()
+                        return START_NOT_STICKY
+                    }
                     startTracking()
                 }
             }
         }
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        // Keep tracking in the foreground service; do not stop on app swipe-away.
+        super.onTaskRemoved(rootIntent)
+    }
+
     override fun onDestroy() {
         if (isRunning) {
-            fusedLocationClient.removeLocationUpdates(locationCallback)
+            // Process/system teardown — persist distance so MainActivity can apply it later.
+            persistPendingIfNeeded(gpsMeters, apply = true)
+            try {
+                fusedLocationClient.removeLocationUpdates(locationCallback)
+            } catch (_: SecurityException) {
+                // Permission may have been revoked.
+            }
             isRunning = false
             currentMeters = 0.0
         }
@@ -76,10 +99,11 @@ class TripTrackingService : Service() {
         lastGpsLocation = null
         currentMeters = 0.0
         isRunning = true
-        getSharedPreferences(FuelAddedActivity.PREFS_NAME, MODE_PRIVATE)
-            .edit()
+        applyDistanceOnStop = true
+
+        prefs().edit()
             .remove(KEY_PENDING_GPS_KM)
-            .apply()
+            .commit()
 
         val notification = buildNotification(getString(R.string.gps_waiting))
         ServiceCompat.startForeground(
@@ -93,15 +117,31 @@ class TripTrackingService : Service() {
             }
         )
 
-        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000L)
-            .setMinUpdateIntervalMillis(1000L)
-            .setMinUpdateDistanceMeters(5f)
-            .build()
-        fusedLocationClient.requestLocationUpdates(
-            request,
-            locationCallback,
-            Looper.getMainLooper()
-        )
+        try {
+            val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000L)
+                .setMinUpdateIntervalMillis(1000L)
+                .setMinUpdateDistanceMeters(3f)
+                .setWaitForAccurateLocation(false)
+                .build()
+            fusedLocationClient.requestLocationUpdates(
+                request,
+                locationCallback,
+                Looper.getMainLooper()
+            )
+        } catch (_: SecurityException) {
+            isRunning = false
+            currentMeters = 0.0
+            sendBroadcast(
+                Intent(ACTION_STOPPED).apply {
+                    setPackage(packageName)
+                    putExtra(EXTRA_METERS, 0.0)
+                    putExtra(EXTRA_APPLY_DISTANCE, false)
+                }
+            )
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            stopSelf()
+            return
+        }
 
         broadcastUpdate()
     }
@@ -109,13 +149,22 @@ class TripTrackingService : Service() {
     private fun onGpsLocation(location: Location) {
         if (!isRunning) return
         if (location.hasAccuracy() && location.accuracy > MAX_ACCURACY_METERS) return
+        if (location.isFromMockProviderCompat()) return
 
         val previous = lastGpsLocation
         lastGpsLocation = location
         if (previous != null) {
+            val dtMs = location.elapsedRealtimeNanos - previous.elapsedRealtimeNanos
+            if (dtMs <= 0L) return
+
             val delta = previous.distanceTo(location).toDouble()
+            // Ignore tiny GPS jitter and impossible jumps.
             if (delta >= MIN_SEGMENT_METERS && delta < MAX_SEGMENT_METERS) {
-                gpsMeters += delta
+                val dtSec = dtMs / 1_000_000_000.0
+                val speedMps = if (dtSec > 0.0) delta / dtSec else 0.0
+                if (speedMps <= MAX_SPEED_MPS) {
+                    gpsMeters += delta
+                }
             }
         }
 
@@ -125,18 +174,23 @@ class TripTrackingService : Service() {
     }
 
     private fun stopTracking() {
-        fusedLocationClient.removeLocationUpdates(locationCallback)
+        try {
+            fusedLocationClient.removeLocationUpdates(locationCallback)
+        } catch (_: SecurityException) {
+            // Permission may have been revoked.
+        }
+
         val meters = gpsMeters
         gpsMeters = 0.0
         lastGpsLocation = null
         currentMeters = 0.0
         isRunning = false
 
-        if (applyDistanceOnStop && meters / 1000.0 >= 0.05) {
-            getSharedPreferences(FuelAddedActivity.PREFS_NAME, MODE_PRIVATE)
-                .edit()
-                .putFloat(KEY_PENDING_GPS_KM, (meters / 1000.0).toFloat())
-                .apply()
+        // commit() so MainActivity can safely read pending before/with the broadcast.
+        if (applyDistanceOnStop) {
+            persistPendingIfNeeded(meters, apply = true)
+        } else {
+            prefs().edit().remove(KEY_PENDING_GPS_KM).commit()
         }
 
         sendBroadcast(
@@ -149,6 +203,18 @@ class TripTrackingService : Service() {
 
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
+    }
+
+    private fun persistPendingIfNeeded(meters: Double, apply: Boolean) {
+        if (!apply) return
+        val km = meters / 1000.0
+        if (km < MIN_APPLY_KM) {
+            prefs().edit().remove(KEY_PENDING_GPS_KM).commit()
+            return
+        }
+        prefs().edit()
+            .putFloat(KEY_PENDING_GPS_KM, km.toFloat())
+            .commit()
     }
 
     private fun broadcastUpdate() {
@@ -218,6 +284,30 @@ class TripTrackingService : Service() {
         manager.createNotificationChannel(channel)
     }
 
+    private fun prefs() =
+        getSharedPreferences(FuelAddedActivity.PREFS_NAME, MODE_PRIVATE)
+
+    private fun hasLocationPermission(): Boolean {
+        val fine = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        val coarse = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        return fine || coarse
+    }
+
+    private fun Location.isFromMockProviderCompat(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            isMock
+        } else {
+            @Suppress("DEPRECATION")
+            isFromMockProvider
+        }
+    }
+
     companion object {
         const val CHANNEL_ID = "trip_tracking"
         const val NOTIFICATION_ID = 1001
@@ -227,10 +317,13 @@ class TripTrackingService : Service() {
         const val EXTRA_METERS = "meters"
         const val EXTRA_APPLY_DISTANCE = "apply_distance"
         const val KEY_PENDING_GPS_KM = "pending_gps_km"
+        const val KEY_GPS_BASELINE_KM = "gps_baseline_km"
 
-        private const val MAX_ACCURACY_METERS = 40f
-        private const val MIN_SEGMENT_METERS = 5.0
+        private const val MAX_ACCURACY_METERS = 50f
+        private const val MIN_SEGMENT_METERS = 3.0
         private const val MAX_SEGMENT_METERS = 2000.0
+        private const val MAX_SPEED_MPS = 70.0 // ~252 km/h
+        private const val MIN_APPLY_KM = 0.05
 
         @Volatile
         var isRunning = false
@@ -251,6 +344,7 @@ class TripTrackingService : Service() {
                 action = ACTION_STOP
                 putExtra(EXTRA_APPLY_DISTANCE, applyDistance)
             }
+            // Service is already a started foreground service; startService delivers the stop.
             context.startService(intent)
         }
     }
