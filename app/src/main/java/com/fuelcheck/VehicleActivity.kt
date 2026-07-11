@@ -37,7 +37,11 @@ class VehicleActivity : AppCompatActivity() {
 
         binding.addCarButton.setOnClickListener {
             hideKeyboard()
-            enterAddCarMode()
+            if (addingCar) {
+                cancelAddCar()
+            } else {
+                enterAddCarMode()
+            }
         }
 
         binding.saveButton.setOnClickListener {
@@ -225,13 +229,16 @@ class VehicleActivity : AppCompatActivity() {
         if (TripTrackingService.isRunning) {
             TripTrackingService.stop(this, applyDistance = false)
         }
+
+        // Clear after requesting stop so a late service write cannot restore prefs.
         VehicleStore.clearAll(this)
+
         startActivity(
             Intent(this, OnboardingActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
         )
-        finish()
+        finishAffinity()
     }
 
     private fun clearErrors() {

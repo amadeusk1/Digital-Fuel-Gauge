@@ -88,7 +88,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         if (!VehicleStore.hasVehicles(this)) {
-            startActivity(Intent(this, OnboardingActivity::class.java))
+            startActivity(
+                Intent(this, OnboardingActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+            )
             finish()
             return
         }
@@ -160,7 +164,11 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         if (!::binding.isInitialized) return
         if (!VehicleStore.hasVehicles(this)) {
-            startActivity(Intent(this, OnboardingActivity::class.java))
+            startActivity(
+                Intent(this, OnboardingActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+            )
             finish()
             return
         }
