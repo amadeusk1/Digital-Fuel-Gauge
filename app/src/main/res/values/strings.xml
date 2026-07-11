@@ -48,6 +48,12 @@
     <string name="gps_unavailable">GPS is unavailable on this device</string>
     <string name="gps_waiting">GPS tracking · waiting for signal…</string>
 
+    <string name="notification_channel_name">Trip tracking</string>
+    <string name="notification_channel_desc">Shown while GPS trip tracking is active</string>
+    <string name="notification_title">Trip tracking active</string>
+    <string name="notification_tracking">+%1$.1f km recorded</string>
+    <string name="notification_stop">Stop</string>
+
     <string name="fuel_added_title">Fuel Added</string>
     <string name="fuel_added_subtitle">Enter liters added, or choose full tank, then press Add fuel.</string>
 

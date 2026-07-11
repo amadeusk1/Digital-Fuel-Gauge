@@ -1,16 +1,16 @@
 package com.fuelcheck
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.os.Looper
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.EditorInfo
@@ -19,12 +19,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.fuelcheck.databinding.ActivityMainBinding
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlin.math.max
@@ -34,11 +28,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var prefs: android.content.SharedPreferences
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private var gpsTracking = false
-    private var gpsMeters = 0.0
-    private var lastGpsLocation: Location? = null
+    private var pendingStartAfterNotificationPermission = false
+    private var pendingFuelGaugeAnimate = false
 
     private val locationPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -46,17 +39,47 @@ class MainActivity : AppCompatActivity() {
         val granted = grants[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
             grants[Manifest.permission.ACCESS_COARSE_LOCATION] == true
         if (granted) {
-            startGpsTracking()
+            ensureNotificationPermissionAndStart()
         } else {
             binding.formError.text = getString(R.string.gps_permission_denied)
             binding.formError.visibility = View.VISIBLE
         }
     }
 
-    private val locationCallback = object : LocationCallback() {
-        override fun onLocationResult(result: LocationResult) {
-            val location = result.lastLocation ?: return
-            onGpsLocation(location)
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        // Tracking can still run as a foreground service; notification may be hidden if denied.
+        if (pendingStartAfterNotificationPermission) {
+            pendingStartAfterNotificationPermission = false
+            startGpsTracking()
+        }
+    }
+
+    private val fuelAddedLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            pendingFuelGaugeAnimate = true
+        }
+    }
+
+    private val trackingReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                TripTrackingService.ACTION_UPDATE -> {
+                    val meters = intent.getDoubleExtra(TripTrackingService.EXTRA_METERS, 0.0)
+                    onTrackingUpdate(meters)
+                }
+                TripTrackingService.ACTION_STOPPED -> {
+                    val meters = intent.getDoubleExtra(TripTrackingService.EXTRA_METERS, 0.0)
+                    val apply = intent.getBooleanExtra(
+                        TripTrackingService.EXTRA_APPLY_DISTANCE,
+                        true
+                    )
+                    onTrackingStopped(meters, apply)
+                }
+            }
         }
     }
 
@@ -66,8 +89,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         prefs = getSharedPreferences(FuelAddedActivity.PREFS_NAME, Context.MODE_PRIVATE)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         restoreSavedValues()
+        updateDaysSinceFuel()
 
         binding.calculateButton.setOnClickListener {
             hideKeyboard()
@@ -75,7 +98,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.fuelAddedButton.setOnClickListener {
-            startActivity(Intent(this, FuelAddedActivity::class.java))
+            fuelAddedLauncher.launch(Intent(this, FuelAddedActivity::class.java))
+        }
+
+        binding.logButton.setOnClickListener {
+            startActivity(Intent(this, LogActivity::class.java))
         }
 
         binding.stationsButton.setOnClickListener {
@@ -96,35 +123,34 @@ class MainActivity : AppCompatActivity() {
                 false
             }
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
-        if (!gpsTracking) {
-            restoreStatus()
+        val filter = IntentFilter().apply {
+            addAction(TripTrackingService.ACTION_UPDATE)
+            addAction(TripTrackingService.ACTION_STOPPED)
         }
-    }
-
-    override fun onPause() {
-        if (gpsTracking) {
-            // Keep session totals; pause updates while in background
-            fusedLocationClient.removeLocationUpdates(locationCallback)
-            lastGpsLocation = null
-        }
-        super.onPause()
+        ContextCompat.registerReceiver(
+            this,
+            trackingReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     override fun onStart() {
         super.onStart()
-        if (gpsTracking && hasLocationPermission()) {
-            requestLocationUpdates()
-        }
+        syncTrackingUiFromService()
+        applyPendingGpsKilometersIfNeeded()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        restoreStatus(animate = pendingFuelGaugeAnimate)
+        pendingFuelGaugeAnimate = false
+        updateDaysSinceFuel()
     }
 
     override fun onDestroy() {
-        if (gpsTracking) {
-            fusedLocationClient.removeLocationUpdates(locationCallback)
-        }
+        unregisterReceiver(trackingReceiver)
         super.onDestroy()
     }
 
@@ -142,23 +168,40 @@ class MainActivity : AppCompatActivity() {
         restoreStatus()
     }
 
-    private fun restoreStatus() {
+    private fun restoreStatus(animate: Boolean = false) {
         val percent = prefs.getFloat(FuelAddedActivity.KEY_LAST_REMAINING_PCT, Float.NaN)
         val liters = prefs.getFloat(FuelAddedActivity.KEY_LAST_REMAINING_L, Float.NaN)
         val consumption = prefs.getFloat(FuelAddedActivity.KEY_CONSUMPTION, Float.NaN)
 
         if (!percent.isNaN() && !liters.isNaN()) {
-            binding.gasGauge.setLevel(percent, animate = false)
+            binding.gasGauge.setLevel(percent, animate = animate)
             val rangeKm = if (!consumption.isNaN() && consumption > 0f) {
                 liters / consumption * 100.0
             } else {
                 null
             }
-            setStatus(liters.toDouble(), rangeKm, animate = false)
+            setStatus(liters.toDouble(), rangeKm, animate = animate)
         } else {
             binding.gasGauge.clearLevel()
             clearStatus()
         }
+    }
+
+    private fun updateDaysSinceFuel() {
+        val lastEntry = FuelLogStore.load(prefs).firstOrNull()
+        if (lastEntry == null) {
+            binding.daysSinceFuel.visibility = View.GONE
+            return
+        }
+
+        val days = ((System.currentTimeMillis() - lastEntry.timestampMs) /
+            (24L * 60L * 60L * 1000L)).toInt().coerceAtLeast(0)
+        binding.daysSinceFuel.text = when (days) {
+            0 -> getString(R.string.days_since_fuel_today)
+            1 -> getString(R.string.days_since_fuel_one)
+            else -> getString(R.string.days_since_fuel, days)
+        }
+        binding.daysSinceFuel.visibility = View.VISIBLE
     }
 
     private fun updateGaugeAndStatus(remainingLiters: Double, percent: Double, rangeKm: Double?) {
@@ -201,8 +244,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun toggleGpsTracking() {
         binding.formError.visibility = View.GONE
-        if (gpsTracking) {
-            stopGpsTracking(applyDistance = true)
+        if (gpsTracking || TripTrackingService.isRunning) {
+            TripTrackingService.stop(this, applyDistance = true)
         } else {
             val odometerRaw = binding.currentKmInput.text?.toString()?.trim().orEmpty()
             if (odometerRaw.toDoubleOrNull() == null || odometerRaw.toDouble() <= 0.0) {
@@ -222,7 +265,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
         if (hasLocationPermission()) {
-            startGpsTracking()
+            ensureNotificationPermissionAndStart()
         } else {
             locationPermissionLauncher.launch(
                 arrayOf(
@@ -231,6 +274,20 @@ class MainActivity : AppCompatActivity() {
                 )
             )
         }
+    }
+
+    private fun ensureNotificationPermissionAndStart() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            pendingStartAfterNotificationPermission = true
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            return
+        }
+        startGpsTracking()
     }
 
     private fun hasLocationPermission(): Boolean {
@@ -251,67 +308,66 @@ class MainActivity : AppCompatActivity() {
             manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
-    @SuppressLint("MissingPermission")
     private fun startGpsTracking() {
         gpsTracking = true
-        gpsMeters = 0.0
-        lastGpsLocation = null
+        showTrackingActiveUi(0.0)
+        TripTrackingService.start(this)
+    }
+
+    private fun syncTrackingUiFromService() {
+        if (TripTrackingService.isRunning) {
+            gpsTracking = true
+            showTrackingActiveUi(TripTrackingService.currentMeters)
+        }
+    }
+
+    private fun showTrackingActiveUi(meters: Double) {
         binding.gpsStatus.visibility = View.VISIBLE
-        binding.gpsStatus.text = getString(R.string.gps_waiting)
+        binding.gpsStatus.text = if (meters < 1.0) {
+            getString(R.string.gps_waiting)
+        } else {
+            getString(R.string.gps_tracking, meters / 1000.0)
+        }
         binding.gpsButton.setColorFilter(
             ContextCompat.getColor(this, R.color.fuel_error)
         )
         binding.gpsButton.contentDescription = getString(R.string.cd_gps_stop)
-        requestLocationUpdates()
     }
 
-    @SuppressLint("MissingPermission")
-    private fun requestLocationUpdates() {
-        val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000L)
-            .setMinUpdateIntervalMillis(1000L)
-            .setMinUpdateDistanceMeters(5f)
-            .build()
-        fusedLocationClient.requestLocationUpdates(
-            request,
-            locationCallback,
-            Looper.getMainLooper()
-        )
+    private fun onTrackingUpdate(meters: Double) {
+        gpsTracking = true
+        showTrackingActiveUi(meters)
     }
 
-    private fun onGpsLocation(location: Location) {
-        if (!gpsTracking) return
-        if (location.hasAccuracy() && location.accuracy > MAX_ACCURACY_METERS) return
-
-        val previous = lastGpsLocation
-        lastGpsLocation = location
-        if (previous != null) {
-            val delta = previous.distanceTo(location).toDouble()
-            if (delta >= MIN_SEGMENT_METERS && delta < MAX_SEGMENT_METERS) {
-                gpsMeters += delta
-            }
-        }
-
-        val km = gpsMeters / 1000.0
-        binding.gpsStatus.text = getString(R.string.gps_tracking, km)
-    }
-
-    private fun stopGpsTracking(applyDistance: Boolean) {
-        fusedLocationClient.removeLocationUpdates(locationCallback)
+    private fun onTrackingStopped(meters: Double, applyDistance: Boolean) {
         gpsTracking = false
-        lastGpsLocation = null
         binding.gpsButton.setColorFilter(
             ContextCompat.getColor(this, R.color.fuel_primary)
         )
         binding.gpsButton.contentDescription = getString(R.string.cd_gps)
 
-        val km = gpsMeters / 1000.0
-        gpsMeters = 0.0
+        // Clear any persisted pending distance; this UI path owns the apply.
+        prefs.edit().remove(TripTrackingService.KEY_PENDING_GPS_KM).apply()
 
-        if (!applyDistance || km < 0.05) {
+        val km = meters / 1000.0
+
+        if (!applyDistance || km < MIN_APPLY_KM) {
             binding.gpsStatus.visibility = View.GONE
             return
         }
 
+        applyGpsKilometers(km)
+    }
+
+    private fun applyPendingGpsKilometersIfNeeded() {
+        if (gpsTracking || TripTrackingService.isRunning) return
+        val pending = prefs.getFloat(TripTrackingService.KEY_PENDING_GPS_KM, Float.NaN)
+        if (pending.isNaN() || pending < MIN_APPLY_KM.toFloat()) return
+        prefs.edit().remove(TripTrackingService.KEY_PENDING_GPS_KM).apply()
+        applyGpsKilometers(pending.toDouble())
+    }
+
+    private fun applyGpsKilometers(km: Double) {
         val currentRaw = binding.currentKmInput.text?.toString()?.trim().orEmpty()
         val currentKm = currentRaw.toDoubleOrNull()
         if (currentKm == null || currentKm <= 0.0) {
@@ -327,7 +383,6 @@ class MainActivity : AppCompatActivity() {
         binding.gpsStatus.text = getString(R.string.gps_added, km)
         binding.gpsStatus.visibility = View.VISIBLE
 
-        // Recalculate fuel using the GPS-updated odometer when possible
         val hasVehicle =
             !prefs.getFloat(FuelAddedActivity.KEY_CONSUMPTION, Float.NaN).isNaN() &&
                 !prefs.getFloat(FuelAddedActivity.KEY_TANK_CAPACITY, Float.NaN).isNaN() &&
@@ -439,8 +494,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val GASBUDDY_HOME = "https://www.gasbuddy.com/home"
         private const val GASBUDDY_PACKAGE = "com.gasbuddymobile.android"
-        private const val MAX_ACCURACY_METERS = 40f
-        private const val MIN_SEGMENT_METERS = 5.0
-        private const val MAX_SEGMENT_METERS = 2000.0
+        private const val MIN_APPLY_KM = 0.05
     }
 }
