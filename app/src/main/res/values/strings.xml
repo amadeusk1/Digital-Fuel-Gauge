@@ -108,6 +108,6 @@
     <string name="error_need_reading">Calculate or set tank/odometer first</string>
     <string name="error_need_last_reading">Log a fuel update first (Fuel Added)</string>
     <string name="error_exceeds_tank">That would overfill the tank (room for %1$.1f L)</string>
-    <string name="error_need_vehicle">Set consumption and tank capacity first (car icon)</string>
+    <string name="error_need_vehicle">Set up a car first (car icon)</string>
     <string name="fuel_added_saved">Fuel update saved</string>
 </resources>
