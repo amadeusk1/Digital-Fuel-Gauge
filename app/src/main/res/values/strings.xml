@@ -24,7 +24,16 @@
     <string name="action_fueled_up">Full tank added</string>
     <string name="action_add_liters">Add liters</string>
     <string name="cd_gas_stations">Open GasBuddy</string>
+    <string name="cd_gps">Track kilometres with GPS</string>
+    <string name="cd_gps_stop">Stop GPS tracking and add kilometres</string>
     <string name="cd_back">Back</string>
+
+    <string name="gps_tracking">GPS tracking · +%1$.1f km</string>
+    <string name="gps_added">Added %1$.1f km from GPS</string>
+    <string name="gps_need_odometer">Enter current odometer before starting GPS</string>
+    <string name="gps_permission_denied">Location permission is required for GPS tracking</string>
+    <string name="gps_unavailable">GPS is unavailable on this device</string>
+    <string name="gps_waiting">GPS tracking · waiting for signal…</string>
 
     <string name="fuel_added_title">Fuel Added</string>
     <string name="fuel_added_subtitle">Log a partial fill or a full tank.</string>
