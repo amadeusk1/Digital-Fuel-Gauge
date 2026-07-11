@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="screen_padding_horizontal">24dp</dimen>
-    <dimen name="screen_padding_top">36dp</dimen>
-    <dimen name="screen_padding_bottom">40dp</dimen>
-    <dimen name="section_spacing">28dp</dimen>
-    <dimen name="field_spacing">14dp</dimen>
-    <dimen name="result_spacing">12dp</dimen>
+    <dimen name="screen_padding_horizontal">20dp</dimen>
+    <dimen name="screen_padding_top">12dp</dimen>
+    <dimen name="screen_padding_bottom">36dp</dimen>
+    <dimen name="section_spacing">22dp</dimen>
+    <dimen name="field_spacing">12dp</dimen>
+    <dimen name="top_bar_height">48dp</dimen>
+    <dimen name="gauge_glow_size">280dp</dimen>
+    <dimen name="status_spacing">6dp</dimen>
 </resources>

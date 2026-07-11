@@ -12,4 +12,6 @@
     <color name="fuel_muted">#FF9A9B9C</color>
     <color name="fuel_error">#FFFF8A80</color>
     <color name="fuel_outline">#FF3D3F41</color>
+    <color name="fuel_glow">#33E6A817</color>
+    <color name="fuel_section_label">#FF6B6D6F</color>
 </resources>

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">FuelCheck</string>
-    <string name="subtitle">Estimate fuel left since last fill-up.</string>
 
-    <string name="label_last_full_km">Last odometer when full</string>
+    <string name="section_trip">Trip</string>
+    <string name="section_vehicle">Vehicle</string>
+
+    <string name="label_last_full_km">Odometer at last fuel update</string>
+    <string name="helper_last_full_locked">Locked until you add fuel</string>
     <string name="suffix_km">km</string>
 
     <string name="label_current_km">Current odometer</string>
@@ -14,15 +17,30 @@
     <string name="label_tank_capacity">Tank capacity</string>
     <string name="suffix_liters">L</string>
 
+    <string name="label_liters_added">Liters added</string>
+
     <string name="action_calculate">Calculate</string>
+    <string name="action_fuel_added">Add fuel</string>
+    <string name="action_fueled_up">Full tank added</string>
+    <string name="action_add_liters">Add liters</string>
+    <string name="cd_gas_stations">Open GasBuddy</string>
+    <string name="cd_back">Back</string>
 
-    <string name="result_remaining_label">Remaining</string>
+    <string name="fuel_added_title">Fuel Added</string>
+    <string name="fuel_added_subtitle">Log a partial fill or a full tank.</string>
 
-    <string name="format_liters">%1$.1f L</string>
-    <string name="format_percent_of_tank">%1$.0f%% of tank</string>
-    <string name="format_range">Estimated range: %1$.0f km</string>
+    <string name="status_empty">Calculate to update fuel status</string>
+    <string name="status_liters">%1$.1f L remaining</string>
+    <string name="status_range">Est. range %1$.0f km</string>
+    <string name="status_full_tank">Full tank · %1$.1f L</string>
+    <string name="status_added">Added %1$.1f L · %2$.1f L in tank</string>
 
     <string name="error_required">Enter a value</string>
     <string name="error_positive">Must be greater than 0</string>
-    <string name="error_current_before_last">Current km must be at or after last fill-up</string>
+    <string name="error_current_before_last">Current km must be at or after last fuel update</string>
+    <string name="error_need_reading">Calculate or set tank/odometer first</string>
+    <string name="error_need_last_reading">Log a fuel update first (Fuel Added)</string>
+    <string name="error_exceeds_tank">That would overfill the tank (room for %1$.1f L)</string>
+    <string name="error_need_vehicle">Set consumption and tank capacity first</string>
+    <string name="fuel_added_saved">Fuel update saved</string>
 </resources>
