@@ -4,7 +4,88 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+
+    <!-- Dial -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M54,30 L78,54 L54,78 L30,54 Z" />
+        android:fillColor="#242628"
+        android:pathData="M54,26c15.46,0 28,12.54 28,28s-12.54,28 -28,28 -28,-12.54 -28,-28 12.54,-28 28,-28z" />
+
+    <!-- Rim -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M54,28.5c14.08,0 25.5,11.42 25.5,25.5s-11.42,25.5 -25.5,25.5 -25.5,-11.42 -25.5,-25.5 11.42,-25.5 25.5,-25.5z"
+        android:strokeWidth="2.25"
+        android:strokeColor="#3D3F41" />
+
+    <!-- Track arc -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M31,63 A25,25 0 0 1 77,63"
+        android:strokeWidth="5.5"
+        android:strokeColor="#3D3F41"
+        android:strokeLineCap="round" />
+
+    <!-- Fuel arc (~65%) -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M31,63 A25,25 0 0 1 69.5,41.5"
+        android:strokeWidth="5.5"
+        android:strokeColor="#E6A817"
+        android:strokeLineCap="round" />
+
+    <!-- Left tick (E) -->
+    <path
+        android:pathData="M33.2,60.8 L29.4,63.1"
+        android:strokeWidth="2.25"
+        android:strokeColor="#9A9B9C"
+        android:strokeLineCap="round" />
+
+    <!-- Center tick -->
+    <path
+        android:pathData="M54,36.5 L54,31.8"
+        android:strokeWidth="2.25"
+        android:strokeColor="#9A9B9C"
+        android:strokeLineCap="round" />
+
+    <!-- Right tick (F) -->
+    <path
+        android:pathData="M74.8,60.8 L78.6,63.1"
+        android:strokeWidth="2.25"
+        android:strokeColor="#9A9B9C"
+        android:strokeLineCap="round" />
+
+    <!-- Needle -->
+    <path
+        android:fillColor="#E6A817"
+        android:pathData="M52.6,61.2 L67.8,43.6 L55.4,62.4 Z" />
+
+    <!-- Hub outer -->
+    <path
+        android:fillColor="#F2F0EB"
+        android:pathData="M54,62 m-4.8,0 a4.8,4.8 0 1,1 9.6,0 a4.8,4.8 0 1,1 -9.6,0" />
+
+    <!-- Hub inner -->
+    <path
+        android:fillColor="#E6A817"
+        android:pathData="M54,62 m-2.4,0 a2.4,2.4 0 1,1 4.8,0 a2.4,2.4 0 1,1 -4.8,0" />
+
+    <!-- Fuel pump body -->
+    <path
+        android:fillColor="#F2F0EB"
+        android:pathData="M49,73 h8 v9.5 h-8z" />
+
+    <!-- Fuel pump window -->
+    <path
+        android:fillColor="#1A1C1E"
+        android:pathData="M50.4,74.4 h5.2 v3.6 h-5.2z" />
+
+    <!-- Fuel pump nozzle -->
+    <path
+        android:fillColor="#F2F0EB"
+        android:pathData="M57,75.2 h2.4 c1.1,0 2,0.9 2,2 v4.2 h-1.7 v-4.2 c0,-0.17 -0.13,-0.3 -0.3,-0.3 H57z" />
+
+    <!-- Fuel pump base -->
+    <path
+        android:fillColor="#F2F0EB"
+        android:pathData="M50.5,82.5 h5 v2.8 h-5z" />
 </vector>
