@@ -37,34 +37,18 @@
                     android:src="@drawable/ic_gps"
                     android:tint="@color/fuel_primary" />
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/titleText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/titleText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/app_name"
-                        android:textAlignment="center"
-                        android:textColor="@color/fuel_primary"
-                        android:textSize="26sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="-0.03" />
-
-                    <TextView
-                        android:id="@+id/activeCarName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:textColor="@color/fuel_muted"
-                        android:textSize="13sp"
-                        android:visibility="gone" />
-                </LinearLayout>
+                    android:gravity="center"
+                    android:text="@string/app_name"
+                    android:textAlignment="center"
+                    android:textColor="@color/fuel_primary"
+                    android:textSize="26sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="-0.03" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -96,6 +80,15 @@
                         android:tint="@color/fuel_primary" />
                 </LinearLayout>
             </FrameLayout>
+
+            <TextView
+                android:id="@+id/activeCarName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@color/fuel_muted"
+                android:textSize="13sp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/gpsStatus"
