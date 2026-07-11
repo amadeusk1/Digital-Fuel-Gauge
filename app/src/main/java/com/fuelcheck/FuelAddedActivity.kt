@@ -2,8 +2,6 @@ package com.fuelcheck
 
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -30,11 +28,11 @@ class FuelAddedActivity : AppCompatActivity() {
 
         prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         restoreSavedValues()
-        updateFullTankButton()
+        updateFuelAmountOptions()
 
         binding.backButton.setOnClickListener { finish() }
 
-        binding.fullTankButton.setOnClickListener {
+        binding.fullTankOption.setOnClickListener {
             hideKeyboard()
             setFullTankSelected(!fullTankSelected)
         }
@@ -44,15 +42,11 @@ class FuelAddedActivity : AppCompatActivity() {
             submitFuel()
         }
 
-        binding.litersAddedInput.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
-            override fun afterTextChanged(s: Editable?) {
-                if (!s.isNullOrBlank() && fullTankSelected) {
-                    setFullTankSelected(false)
-                }
+        binding.litersAddedInput.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && fullTankSelected) {
+                setFullTankSelected(false)
             }
-        })
+        }
 
         binding.litersAddedInput.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -83,27 +77,39 @@ class FuelAddedActivity : AppCompatActivity() {
             binding.litersAddedInput.setText("")
             binding.litersAddedInput.clearFocus()
         }
-        updateFullTankButton()
+        applyLitersInputEnabled(!selected)
+        updateFuelAmountOptions()
     }
 
-    private fun updateFullTankButton() {
+    private fun applyLitersInputEnabled(enabled: Boolean) {
+        binding.litersAddedInput.isEnabled = enabled
+        binding.litersAddedInput.isFocusable = enabled
+        binding.litersAddedInput.isFocusableInTouchMode = enabled
+        binding.litersAddedLayout.isEnabled = enabled
+        binding.litersOption.alpha = if (enabled) 1f else 0.45f
+        binding.litersAddedInput.setTextColor(
+            ContextCompat.getColor(
+                this,
+                if (enabled) R.color.fuel_text else R.color.fuel_muted
+            )
+        )
+    }
+
+    private fun updateFuelAmountOptions() {
         if (fullTankSelected) {
-            binding.fullTankButton.setBackgroundColor(
+            binding.fullTankOption.setBackgroundResource(R.drawable.bg_fuel_option_selected)
+            binding.fullTankCheck.visibility = View.VISIBLE
+            binding.fullTankLabel.setTextColor(
                 ContextCompat.getColor(this, R.color.fuel_primary)
             )
-            binding.fullTankButton.setTextColor(
-                ContextCompat.getColor(this, R.color.fuel_on_primary)
-            )
-            binding.fullTankButton.strokeWidth = 0
+            binding.litersOption.setBackgroundResource(R.drawable.bg_fuel_option)
         } else {
-            binding.fullTankButton.setBackgroundColor(
-                ContextCompat.getColor(this, android.R.color.transparent)
+            binding.fullTankOption.setBackgroundResource(R.drawable.bg_fuel_option)
+            binding.fullTankCheck.visibility = View.GONE
+            binding.fullTankLabel.setTextColor(
+                ContextCompat.getColor(this, R.color.fuel_text)
             )
-            binding.fullTankButton.setTextColor(
-                ContextCompat.getColor(this, R.color.fuel_primary)
-            )
-            binding.fullTankButton.strokeWidth =
-                (1.5f * resources.displayMetrics.density).toInt()
+            binding.litersOption.setBackgroundResource(R.drawable.bg_fuel_option)
         }
     }
 
@@ -254,8 +260,8 @@ class FuelAddedActivity : AppCompatActivity() {
             null
         }
         binding.addFuelButton.isEnabled = true
-        binding.fullTankButton.isEnabled = true
-        binding.litersAddedInput.isEnabled = true
+        binding.fullTankOption.isEnabled = true
+        applyLitersInputEnabled(!fullTankSelected)
     }
 
     private fun readPositive(

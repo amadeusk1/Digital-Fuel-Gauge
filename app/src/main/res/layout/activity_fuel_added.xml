@@ -101,46 +101,105 @@
                     android:textColor="@color/fuel_text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/litersAddedLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:hint="@string/label_liters_added"
-                app:boxBackgroundColor="@color/fuel_surface"
-                app:boxStrokeColor="@color/text_input_box_stroke"
-                app:hintTextColor="@color/fuel_muted"
-                app:suffixText="@string/suffix_liters"
-                app:suffixTextColor="@color/fuel_muted">
+                android:layout_marginTop="24dp"
+                android:text="@string/label_fuel_amount"
+                android:textColor="@color/fuel_section_label"
+                android:textSize="12sp"
+                android:textAllCaps="true"
+                android:letterSpacing="0.08" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/litersAddedInput"
+            <LinearLayout
+                android:id="@+id/litersOption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_fuel_option"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:imeOptions="actionDone"
-                    android:textColor="@color/fuel_text" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:text="@string/option_type_liters"
+                    android:textColor="@color/fuel_text"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/fullTankButton"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/litersAddedLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:hint="@string/label_liters_added"
+                    app:boxBackgroundColor="@color/fuel_bg"
+                    app:boxStrokeColor="@color/text_input_box_stroke"
+                    app:hintTextColor="@color/fuel_muted"
+                    app:suffixText="@string/suffix_liters"
+                    app:suffixTextColor="@color/fuel_muted">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/litersAddedInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:imeOptions="actionDone"
+                        android:textColor="@color/fuel_text" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="14dp"
-                android:text="@string/action_full_tank"
-                android:textAllCaps="false"
-                android:textColor="@color/fuel_primary"
-                app:cornerRadius="12dp"
-                app:strokeColor="@color/fuel_primary"
-                app:strokeWidth="1.5dp" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="@string/label_or"
+                android:textColor="@color/fuel_muted"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <FrameLayout
+                android:id="@+id/fullTankOption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_fuel_option"
+                android:foreground="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="16dp">
+
+                <TextView
+                    android:id="@+id/fullTankLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="28dp"
+                    android:text="@string/option_full_tank"
+                    android:textColor="@color/fuel_text"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/fullTankCheck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end|center_vertical"
+                    android:text="@string/option_selected_mark"
+                    android:textColor="@color/fuel_primary"
+                    android:textSize="18sp"
+                    android:visibility="gone" />
+            </FrameLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/addFuelButton"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:backgroundTint="@color/fuel_primary"
                 android:text="@string/action_fuel_added"
                 android:textAllCaps="false"

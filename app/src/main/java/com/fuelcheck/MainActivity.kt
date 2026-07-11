@@ -170,6 +170,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun restoreStatus(animate: Boolean = false) {
+        updateLastFuelOdometer()
+
         val percent = prefs.getFloat(FuelAddedActivity.KEY_LAST_REMAINING_PCT, Float.NaN)
         val liters = prefs.getFloat(FuelAddedActivity.KEY_LAST_REMAINING_L, Float.NaN)
         val consumption = prefs.getFloat(FuelAddedActivity.KEY_CONSUMPTION, Float.NaN)
@@ -186,6 +188,19 @@ class MainActivity : AppCompatActivity() {
             binding.gasGauge.clearLevel()
             clearStatus()
         }
+    }
+
+    private fun updateLastFuelOdometer() {
+        val lastFull = prefs.getFloat(FuelAddedActivity.KEY_LAST_FULL_KM, Float.NaN)
+        if (lastFull.isNaN() || lastFull <= 0f) {
+            binding.statusLastFuelKm.visibility = View.GONE
+            return
+        }
+        binding.statusLastFuelKm.text = getString(
+            R.string.status_last_fuel_km,
+            formatStoredNumber(lastFull.toDouble())
+        )
+        binding.statusLastFuelKm.visibility = View.VISIBLE
     }
 
     private fun updateDaysSinceFuel() {
@@ -206,6 +221,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateGaugeAndStatus(remainingLiters: Double, percent: Double, rangeKm: Double?) {
+        updateLastFuelOdometer()
         binding.gasGauge.setLevel(percent.toFloat(), animate = true)
         setStatus(remainingLiters, rangeKm, animate = true)
     }
@@ -230,7 +246,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun animateStatus() {
-        listOf(binding.statusLiters, binding.statusRange).forEach { view ->
+        listOf(binding.statusLastFuelKm, binding.statusLiters, binding.statusRange).forEach { view ->
             if (view.visibility != View.VISIBLE) return@forEach
             view.alpha = 0f
             view.translationY = 12f
@@ -248,8 +264,7 @@ class MainActivity : AppCompatActivity() {
         if (gpsTracking || TripTrackingService.isRunning) {
             promptEndGpsTracking()
         } else {
-            val odometerRaw = binding.currentKmInput.text?.toString()?.trim().orEmpty()
-            if (odometerRaw.toDoubleOrNull() == null || odometerRaw.toDouble() <= 0.0) {
+            if (resolveOdometerForGps() == null) {
                 binding.currentKmLayout.error = getString(R.string.gps_need_odometer)
                 binding.formError.text = getString(R.string.gps_need_odometer)
                 binding.formError.visibility = View.VISIBLE
@@ -411,9 +426,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun applyGpsKilometers(km: Double) {
-        val currentRaw = binding.currentKmInput.text?.toString()?.trim().orEmpty()
-        val currentKm = currentRaw.toDoubleOrNull()
-        if (currentKm == null || currentKm <= 0.0) {
+        val currentKm = resolveOdometerForGps()
+        if (currentKm == null) {
             binding.gpsStatus.visibility = View.GONE
             binding.formError.text = getString(R.string.gps_need_odometer)
             binding.formError.visibility = View.VISIBLE
@@ -433,6 +447,28 @@ class MainActivity : AppCompatActivity() {
         if (hasVehicle) {
             calculate()
         }
+    }
+
+    /**
+     * Prefer the current odometer field; if empty, use last fuel-update km and prefill the field.
+     */
+    private fun resolveOdometerForGps(): Double? {
+        val currentRaw = binding.currentKmInput.text?.toString()?.trim().orEmpty()
+        val currentKm = currentRaw.toDoubleOrNull()
+        if (currentKm != null && currentKm > 0.0) {
+            binding.currentKmLayout.error = null
+            return currentKm
+        }
+
+        val lastFuelKm = prefs.getFloat(FuelAddedActivity.KEY_LAST_FULL_KM, Float.NaN)
+        if (!lastFuelKm.isNaN() && lastFuelKm > 0f) {
+            val value = lastFuelKm.toDouble()
+            binding.currentKmInput.setText(formatStoredNumber(value))
+            binding.currentKmLayout.error = null
+            return value
+        }
+
+        return null
     }
 
     private fun calculate() {

@@ -24,7 +24,11 @@
     <string name="days_since_fuel_today">0 days since last fuel up</string>
     <string name="days_since_fuel_one">1 day since last fuel up</string>
     <string name="days_since_fuel">%1$d days since last fuel up</string>
-    <string name="action_full_tank">Full tank</string>
+    <string name="label_fuel_amount">Fuel amount</string>
+    <string name="label_or">or</string>
+    <string name="option_type_liters">Type liters added</string>
+    <string name="option_full_tank">Select full tank</string>
+    <string name="option_selected_mark">✓</string>
     <string name="cd_gas_stations">Open GasBuddy</string>
     <string name="cd_log">Fuel log</string>
     <string name="cd_gps">Track kilometres with GPS</string>
@@ -43,7 +47,7 @@
 
     <string name="gps_tracking">GPS tracking · +%1$.1f km</string>
     <string name="gps_added">Added %1$.1f km from GPS</string>
-    <string name="gps_need_odometer">Enter current odometer before starting GPS</string>
+    <string name="gps_need_odometer">Enter current odometer or log a fuel update first</string>
     <string name="gps_permission_denied">Location permission is required for GPS tracking</string>
     <string name="gps_unavailable">GPS is unavailable on this device</string>
     <string name="gps_waiting">GPS tracking · waiting for signal…</string>
@@ -65,9 +69,10 @@
     <string name="gps_discard_cancel">Cancel</string>
 
     <string name="fuel_added_title">Fuel Added</string>
-    <string name="fuel_added_subtitle">Enter liters added, or choose full tank, then press Add fuel.</string>
+    <string name="fuel_added_subtitle">Enter odometer, choose how much fuel, then press Add fuel.</string>
 
     <string name="status_empty">Calculate to update fuel status</string>
+    <string name="status_last_fuel_km">%1$s km at last fuel update</string>
     <string name="status_liters">%1$.1f L remaining</string>
     <string name="status_range">Est. range %1$.0f km</string>
     <string name="status_full_tank">Full tank · %1$.1f L</string>

@@ -112,12 +112,22 @@
                     android:layout_gravity="center_horizontal" />
             </FrameLayout>
 
+            <TextView
+                android:id="@+id/statusLastFuelKm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:gravity="center"
+                android:textColor="@color/fuel_muted"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
             <!-- Status under gauge -->
             <TextView
                 android:id="@+id/statusLiters"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="@dimen/status_spacing"
                 android:gravity="center"
                 android:text="@string/status_empty"
                 android:textColor="@color/fuel_text"
