@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="screen_padding_horizontal">24dp</dimen>
+    <dimen name="screen_padding_top">36dp</dimen>
+    <dimen name="screen_padding_bottom">40dp</dimen>
+    <dimen name="section_spacing">28dp</dimen>
+    <dimen name="field_spacing">14dp</dimen>
+    <dimen name="result_spacing">12dp</dimen>
+</resources>

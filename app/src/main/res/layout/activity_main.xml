@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/fuel_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/screen_padding_horizontal"
+        android:paddingTop="@dimen/screen_padding_top"
+        android:paddingBottom="@dimen/screen_padding_bottom">
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="@color/fuel_primary"
+            android:textSize="40sp"
+            android:textStyle="bold"
+            android:letterSpacing="-0.03" />
+
+        <TextView
+            android:id="@+id/subtitleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/subtitle"
+            android:textColor="@color/fuel_muted"
+            android:textSize="16sp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lastFullLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_spacing"
+            android:hint="@string/label_last_full_km"
+            app:boxBackgroundColor="@color/fuel_surface"
+            app:boxStrokeColor="@color/text_input_box_stroke"
+            app:hintTextColor="@color/fuel_muted"
+            app:suffixText="@string/suffix_km"
+            app:suffixTextColor="@color/fuel_muted">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/lastFullInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:imeOptions="actionNext"
+                android:textColor="@color/fuel_text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/currentKmLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_spacing"
+            android:hint="@string/label_current_km"
+            app:boxBackgroundColor="@color/fuel_surface"
+            app:boxStrokeColor="@color/text_input_box_stroke"
+            app:hintTextColor="@color/fuel_muted"
+            app:suffixText="@string/suffix_km"
+            app:suffixTextColor="@color/fuel_muted">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/currentKmInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:imeOptions="actionNext"
+                android:textColor="@color/fuel_text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/consumptionLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_spacing"
+            android:hint="@string/label_consumption"
+            app:boxBackgroundColor="@color/fuel_surface"
+            app:boxStrokeColor="@color/text_input_box_stroke"
+            app:hintTextColor="@color/fuel_muted"
+            app:suffixText="@string/suffix_l_per_100km"
+            app:suffixTextColor="@color/fuel_muted">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/consumptionInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:imeOptions="actionNext"
+                android:textColor="@color/fuel_text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tankCapacityLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_spacing"
+            android:hint="@string/label_tank_capacity"
+            app:boxBackgroundColor="@color/fuel_surface"
+            app:boxStrokeColor="@color/text_input_box_stroke"
+            app:hintTextColor="@color/fuel_muted"
+            app:suffixText="@string/suffix_liters"
+            app:suffixTextColor="@color/fuel_muted">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tankCapacityInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:imeOptions="actionDone"
+                android:textColor="@color/fuel_text" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/calculateButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/fuel_primary"
+            android:text="@string/action_calculate"
+            android:textAllCaps="false"
+            android:textColor="@color/fuel_on_primary"
+            android:textSize="16sp"
+            app:cornerRadius="10dp" />
+
+        <TextView
+            android:id="@+id/formError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/fuel_error"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/resultPanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/section_spacing"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/result_remaining_label"
+                android:textColor="@color/fuel_muted"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/remainingValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/fuel_text"
+                android:textSize="44sp"
+                android:textStyle="bold"
+                android:letterSpacing="-0.02" />
+
+            <TextView
+                android:id="@+id/percentValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/result_spacing"
+                android:textColor="@color/fuel_primary"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/rangeValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/result_spacing"
+                android:textColor="@color/fuel_text"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

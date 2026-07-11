@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FuelCheck</string>
+    <string name="subtitle">Estimate fuel left since last fill-up.</string>
+
+    <string name="label_last_full_km">Last odometer when full</string>
+    <string name="suffix_km">km</string>
+
+    <string name="label_current_km">Current odometer</string>
+
+    <string name="label_consumption">Average consumption</string>
+    <string name="suffix_l_per_100km">L/100 km</string>
+
+    <string name="label_tank_capacity">Tank capacity</string>
+    <string name="suffix_liters">L</string>
+
+    <string name="action_calculate">Calculate</string>
+
+    <string name="result_remaining_label">Remaining</string>
+
+    <string name="format_liters">%1$.1f L</string>
+    <string name="format_percent_of_tank">%1$.0f%% of tank</string>
+    <string name="format_range">Estimated range: %1$.0f km</string>
+
+    <string name="error_required">Enter a value</string>
+    <string name="error_positive">Must be greater than 0</string>
+    <string name="error_current_before_last">Current km must be at or after last fill-up</string>
+</resources>

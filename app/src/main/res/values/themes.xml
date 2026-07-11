@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Fuelcheck" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/fuel_primary</item>
+        <item name="colorPrimaryVariant">@color/fuel_primary_dark</item>
+        <item name="colorOnPrimary">@color/fuel_on_primary</item>
+        <item name="colorSecondary">@color/fuel_primary</item>
+        <item name="colorOnSecondary">@color/fuel_on_primary</item>
+        <item name="android:statusBarColor">@color/fuel_bg</item>
+        <item name="android:navigationBarColor">@color/fuel_bg</item>
+        <item name="android:windowBackground">@color/fuel_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="colorSurface">@color/fuel_surface</item>
+        <item name="colorOnSurface">@color/fuel_text</item>
+        <item name="colorError">@color/fuel_error</item>
+        <item name="colorOnError">@color/fuel_on_primary</item>
+    </style>
+</resources>

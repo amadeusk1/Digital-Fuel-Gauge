@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="fuel_bg">#FF1A1C1E</color>
+    <color name="fuel_surface">#FF242628</color>
+    <color name="fuel_primary">#FFE6A817</color>
+    <color name="fuel_primary_dark">#FFC4890F</color>
+    <color name="fuel_on_primary">#FF1A1C1E</color>
+    <color name="fuel_text">#FFF2F0EB</color>
+    <color name="fuel_muted">#FF9A9B9C</color>
+    <color name="fuel_error">#FFFF8A80</color>
+    <color name="fuel_outline">#FF3D3F41</color>
+</resources>
