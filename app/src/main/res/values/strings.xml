@@ -53,6 +53,16 @@
     <string name="notification_title">Trip tracking active</string>
     <string name="notification_tracking">+%1$.1f km recorded</string>
     <string name="notification_stop">Stop</string>
+    <string name="gps_end_title">End GPS tracking?</string>
+    <string name="gps_end_message">Tracked %1$.1f km. Add it to your odometer, or discard this trip?</string>
+    <string name="gps_end_message_empty">No distance recorded yet. Stop tracking or keep going?</string>
+    <string name="gps_action_add">Add km</string>
+    <string name="gps_action_discard">Discard</string>
+    <string name="gps_action_keep">Keep tracking</string>
+    <string name="gps_discard_title">Discard GPS trip?</string>
+    <string name="gps_discard_message">%1$.1f km will not be added to your odometer.</string>
+    <string name="gps_discard_confirm">Discard trip</string>
+    <string name="gps_discard_cancel">Cancel</string>
 
     <string name="fuel_added_title">Fuel Added</string>
     <string name="fuel_added_subtitle">Enter liters added, or choose full tank, then press Add fuel.</string>

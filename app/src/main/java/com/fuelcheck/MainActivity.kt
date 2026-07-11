@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.fuelcheck.databinding.ActivityMainBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlin.math.max
@@ -245,7 +246,7 @@ class MainActivity : AppCompatActivity() {
     private fun toggleGpsTracking() {
         binding.formError.visibility = View.GONE
         if (gpsTracking || TripTrackingService.isRunning) {
-            TripTrackingService.stop(this, applyDistance = true)
+            promptEndGpsTracking()
         } else {
             val odometerRaw = binding.currentKmInput.text?.toString()?.trim().orEmpty()
             if (odometerRaw.toDoubleOrNull() == null || odometerRaw.toDouble() <= 0.0) {
@@ -256,6 +257,48 @@ class MainActivity : AppCompatActivity() {
             }
             ensureLocationPermissionAndStart()
         }
+    }
+
+    private fun promptEndGpsTracking() {
+        val km = TripTrackingService.currentMeters / 1000.0
+        val hasDistance = km >= MIN_APPLY_KM
+        val message = if (hasDistance) {
+            getString(R.string.gps_end_message, km)
+        } else {
+            getString(R.string.gps_end_message_empty)
+        }
+
+        val builder = MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.gps_end_title)
+            .setMessage(message)
+            .setNeutralButton(R.string.gps_action_keep, null)
+
+        if (hasDistance) {
+            builder
+                .setPositiveButton(R.string.gps_action_add) { _, _ ->
+                    TripTrackingService.stop(this, applyDistance = true)
+                }
+                .setNegativeButton(R.string.gps_action_discard) { _, _ ->
+                    confirmDiscardGpsTrip(km)
+                }
+        } else {
+            builder.setPositiveButton(R.string.gps_action_discard) { _, _ ->
+                TripTrackingService.stop(this, applyDistance = false)
+            }
+        }
+
+        builder.show()
+    }
+
+    private fun confirmDiscardGpsTrip(km: Double) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.gps_discard_title)
+            .setMessage(getString(R.string.gps_discard_message, km))
+            .setNegativeButton(R.string.gps_discard_cancel, null)
+            .setPositiveButton(R.string.gps_discard_confirm) { _, _ ->
+                TripTrackingService.stop(this, applyDistance = false)
+            }
+            .show()
     }
 
     private fun ensureLocationPermissionAndStart() {
