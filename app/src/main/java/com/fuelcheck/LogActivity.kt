@@ -34,7 +34,7 @@ class LogActivity : AppCompatActivity() {
     }
 
     private fun refreshList() {
-        val entries = FuelLogStore.load(FuelLogStore.prefs(this))
+        val entries = FuelLogStore.load(this)
         if (entries.isEmpty()) {
             binding.emptyMessage.visibility = View.VISIBLE
             binding.logList.visibility = View.GONE

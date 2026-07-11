@@ -37,18 +37,34 @@
                     android:src="@drawable/ic_gps"
                     android:tint="@color/fuel_primary" />
 
-                <TextView
-                    android:id="@+id/titleText"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="@string/app_name"
-                    android:textAlignment="center"
-                    android:textColor="@color/fuel_primary"
-                    android:textSize="26sp"
-                    android:textStyle="bold"
-                    android:letterSpacing="-0.03" />
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/titleText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/app_name"
+                        android:textAlignment="center"
+                        android:textColor="@color/fuel_primary"
+                        android:textSize="26sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="-0.03" />
+
+                    <TextView
+                        android:id="@+id/activeCarName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="@color/fuel_muted"
+                        android:textSize="13sp"
+                        android:visibility="gone" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -195,7 +211,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"
-                    android:imeOptions="actionNext"
+                    android:imeOptions="actionDone"
                     android:textColor="@color/fuel_text" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -212,6 +228,19 @@
                 app:strokeColor="@color/fuel_primary"
                 app:strokeWidth="1.5dp" />
 
+            <ImageButton
+                android:id="@+id/vehicleButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/cd_vehicle"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_car"
+                android:tint="@color/fuel_primary" />
+
             <TextView
                 android:id="@+id/daysSinceFuel"
                 android:layout_width="match_parent"
@@ -221,71 +250,6 @@
                 android:textColor="@color/fuel_muted"
                 android:textSize="14sp"
                 android:visibility="gone" />
-
-            <!-- Vehicle: 2-column -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/section_spacing"
-                android:text="@string/section_vehicle"
-                android:textAllCaps="true"
-                android:textColor="@color/fuel_section_label"
-                android:textSize="12sp"
-                android:letterSpacing="0.08" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/consumptionLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:layout_weight="1"
-                    android:hint="@string/label_consumption"
-                    app:boxBackgroundColor="@color/fuel_surface"
-                    app:boxStrokeColor="@color/text_input_box_stroke"
-                    app:hintTextColor="@color/fuel_muted"
-                    app:suffixText="@string/suffix_l_per_100km"
-                    app:suffixTextColor="@color/fuel_muted">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/consumptionInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="numberDecimal"
-                        android:imeOptions="actionNext"
-                        android:textColor="@color/fuel_text" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tankCapacityLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_weight="1"
-                    android:hint="@string/label_tank_capacity"
-                    app:boxBackgroundColor="@color/fuel_surface"
-                    app:boxStrokeColor="@color/text_input_box_stroke"
-                    app:hintTextColor="@color/fuel_muted"
-                    app:suffixText="@string/suffix_liters"
-                    app:suffixTextColor="@color/fuel_muted">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/tankCapacityInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="numberDecimal"
-                        android:imeOptions="actionDone"
-                        android:textColor="@color/fuel_text" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </FrameLayout>

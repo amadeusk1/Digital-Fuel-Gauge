@@ -86,11 +86,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (!VehicleStore.hasVehicles(this)) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+            finish()
+            return
+        }
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         prefs = getSharedPreferences(FuelAddedActivity.PREFS_NAME, Context.MODE_PRIVATE)
         restoreSavedValues()
+        updateActiveCarName()
         updateDaysSinceFuel()
 
         binding.calculateButton.setOnClickListener {
@@ -100,6 +108,10 @@ class MainActivity : AppCompatActivity() {
 
         binding.fuelAddedButton.setOnClickListener {
             fuelAddedLauncher.launch(Intent(this, FuelAddedActivity::class.java))
+        }
+
+        binding.vehicleButton.setOnClickListener {
+            startActivity(Intent(this, VehicleActivity::class.java))
         }
 
         binding.logButton.setOnClickListener {
@@ -115,7 +127,7 @@ class MainActivity : AppCompatActivity() {
             toggleGpsTracking()
         }
 
-        binding.tankCapacityInput.setOnEditorActionListener { _, actionId, _ ->
+        binding.currentKmInput.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 hideKeyboard()
                 calculate()
@@ -139,42 +151,57 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        if (!::binding.isInitialized) return
         syncTrackingUiFromService()
         applyPendingGpsKilometersIfNeeded()
     }
 
     override fun onResume() {
         super.onResume()
+        if (!::binding.isInitialized) return
+        if (!VehicleStore.hasVehicles(this)) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+            finish()
+            return
+        }
+        updateActiveCarName()
         restoreStatus(animate = pendingFuelGaugeAnimate)
         pendingFuelGaugeAnimate = false
         updateDaysSinceFuel()
     }
 
     override fun onDestroy() {
-        unregisterReceiver(trackingReceiver)
+        if (::binding.isInitialized) {
+            unregisterReceiver(trackingReceiver)
+        }
         super.onDestroy()
     }
 
+    private fun updateActiveCarName() {
+        val name = VehicleStore.active(this)?.name
+        if (name.isNullOrBlank()) {
+            binding.activeCarName.visibility = View.GONE
+        } else {
+            binding.activeCarName.text = name
+            binding.activeCarName.visibility = View.VISIBLE
+        }
+    }
+
     private fun restoreSavedValues() {
-        val tankCapacity = prefs.getFloat(FuelAddedActivity.KEY_TANK_CAPACITY, Float.NaN)
-        if (!tankCapacity.isNaN() && tankCapacity > 0f) {
-            binding.tankCapacityInput.setText(formatStoredNumber(tankCapacity.toDouble()))
-        }
-
-        val consumption = prefs.getFloat(FuelAddedActivity.KEY_CONSUMPTION, Float.NaN)
-        if (!consumption.isNaN() && consumption > 0f) {
-            binding.consumptionInput.setText(formatStoredNumber(consumption.toDouble()))
-        }
-
         restoreStatus()
+        val vehicle = VehicleStore.active(this) ?: return
+        if (!vehicle.lastFullKm.isNaN() && vehicle.lastFullKm > 0f) {
+            binding.currentKmInput.setText(formatStoredNumber(vehicle.lastFullKm.toDouble()))
+        }
     }
 
     private fun restoreStatus(animate: Boolean = false) {
         updateLastFuelOdometer()
 
-        val percent = prefs.getFloat(FuelAddedActivity.KEY_LAST_REMAINING_PCT, Float.NaN)
-        val liters = prefs.getFloat(FuelAddedActivity.KEY_LAST_REMAINING_L, Float.NaN)
-        val consumption = prefs.getFloat(FuelAddedActivity.KEY_CONSUMPTION, Float.NaN)
+        val vehicle = VehicleStore.active(this)
+        val percent = vehicle?.lastRemainingPct ?: Float.NaN
+        val liters = vehicle?.lastRemainingL ?: Float.NaN
+        val consumption = vehicle?.consumption ?: Float.NaN
 
         if (!percent.isNaN() && !liters.isNaN()) {
             binding.gasGauge.setLevel(percent, animate = animate)
@@ -191,7 +218,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateLastFuelOdometer() {
-        val lastFull = prefs.getFloat(FuelAddedActivity.KEY_LAST_FULL_KM, Float.NaN)
+        val lastFull = VehicleStore.active(this)?.lastFullKm ?: Float.NaN
         if (lastFull.isNaN() || lastFull <= 0f) {
             binding.statusLastFuelKm.visibility = View.GONE
             return
@@ -204,7 +231,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateDaysSinceFuel() {
-        val lastEntry = FuelLogStore.load(prefs).firstOrNull()
+        val lastEntry = FuelLogStore.load(this).firstOrNull()
         if (lastEntry == null) {
             binding.daysSinceFuel.visibility = View.GONE
             return
@@ -504,10 +531,11 @@ class MainActivity : AppCompatActivity() {
         binding.gpsStatus.text = getString(R.string.gps_added, km)
         binding.gpsStatus.visibility = View.VISIBLE
 
-        val hasVehicle =
-            !prefs.getFloat(FuelAddedActivity.KEY_CONSUMPTION, Float.NaN).isNaN() &&
-                !prefs.getFloat(FuelAddedActivity.KEY_TANK_CAPACITY, Float.NaN).isNaN() &&
-                !prefs.getFloat(FuelAddedActivity.KEY_LAST_FULL_KM, Float.NaN).isNaN()
+        val hasVehicle = VehicleStore.active(this)?.let { vehicle ->
+            !vehicle.consumption.isNaN() && vehicle.consumption > 0f &&
+                !vehicle.tankCapacity.isNaN() && vehicle.tankCapacity > 0f &&
+                !vehicle.lastFullKm.isNaN() && vehicle.lastFullKm > 0f
+        } == true
         if (hasVehicle) {
             calculate()
         }
@@ -533,7 +561,7 @@ class MainActivity : AppCompatActivity() {
             return currentKm
         }
 
-        val lastFuelKm = prefs.getFloat(FuelAddedActivity.KEY_LAST_FULL_KM, Float.NaN)
+        val lastFuelKm = VehicleStore.active(this)?.lastFullKm ?: Float.NaN
         if (!lastFuelKm.isNaN() && lastFuelKm > 0f) {
             val value = lastFuelKm.toDouble()
             binding.currentKmInput.setText(formatStoredNumber(value))
@@ -548,10 +576,17 @@ class MainActivity : AppCompatActivity() {
         binding.formError.visibility = View.GONE
 
         val currentKm = readPositive(binding.currentKmLayout, binding.currentKmInput) ?: return
-        val consumption = readPositive(binding.consumptionLayout, binding.consumptionInput) ?: return
-        val tankCapacity = readPositive(binding.tankCapacityLayout, binding.tankCapacityInput) ?: return
+        val vehicle = VehicleStore.active(this)
+        if (vehicle == null ||
+            vehicle.consumption.isNaN() || vehicle.consumption <= 0f ||
+            vehicle.tankCapacity.isNaN() || vehicle.tankCapacity <= 0f
+        ) {
+            binding.formError.text = getString(R.string.error_need_vehicle)
+            binding.formError.visibility = View.VISIBLE
+            return
+        }
 
-        val lastFull = prefs.getFloat(FuelAddedActivity.KEY_LAST_FULL_KM, Float.NaN)
+        val lastFull = vehicle.lastFullKm
         if (lastFull.isNaN() || lastFull <= 0f) {
             binding.formError.text = getString(R.string.error_need_last_reading)
             binding.formError.visibility = View.VISIBLE
@@ -565,27 +600,31 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val savedRemaining = prefs.getFloat(FuelAddedActivity.KEY_LAST_REMAINING_L, Float.NaN)
+        val savedRemaining = vehicle.lastRemainingL
+        val consumptionValue = vehicle.consumption.toDouble()
+        val tankCapacityValue = vehicle.tankCapacity.toDouble()
 
         val remainingLiters = if (!savedRemaining.isNaN()) {
-            val used = (currentKm - lastFull) * consumption / 100.0
-            max(0.0, min(tankCapacity, savedRemaining.toDouble() - used))
+            val used = (currentKm - lastFull) * consumptionValue / 100.0
+            max(0.0, min(tankCapacityValue, savedRemaining.toDouble() - used))
         } else {
-            val usedLiters = (currentKm - lastFull) * consumption / 100.0
-            max(0.0, tankCapacity - usedLiters)
+            val usedLiters = (currentKm - lastFull) * consumptionValue / 100.0
+            max(0.0, tankCapacityValue - usedLiters)
         }
 
-        val percent = (remainingLiters / tankCapacity) * 100.0
-        val rangeKm = remainingLiters / consumption * 100.0
+        val percent = (remainingLiters / tankCapacityValue) * 100.0
+        val rangeKm = remainingLiters / consumptionValue * 100.0
 
-        prefs.edit()
-            .putFloat(FuelAddedActivity.KEY_TANK_CAPACITY, tankCapacity.toFloat())
-            .putFloat(FuelAddedActivity.KEY_CONSUMPTION, consumption.toFloat())
-            .putFloat(FuelAddedActivity.KEY_LAST_FULL_KM, currentKm.toFloat())
-            .putBoolean(FuelAddedActivity.KEY_LAST_FULL_LOCKED, true)
-            .putFloat(FuelAddedActivity.KEY_LAST_REMAINING_L, remainingLiters.toFloat())
-            .putFloat(FuelAddedActivity.KEY_LAST_REMAINING_PCT, percent.toFloat())
-            .apply()
+        VehicleStore.save(
+            this,
+            vehicle.copy(
+                lastFullKm = currentKm.toFloat(),
+                lastFullLocked = true,
+                lastRemainingL = remainingLiters.toFloat(),
+                lastRemainingPct = percent.toFloat()
+            ),
+            setActive = true
+        )
 
         updateGaugeAndStatus(remainingLiters, percent, rangeKm)
     }

@@ -33,7 +33,31 @@
     <string name="cd_log">Fuel log</string>
     <string name="cd_gps">Track kilometres with GPS</string>
     <string name="cd_gps_stop">Stop GPS tracking and add kilometres</string>
+    <string name="cd_vehicle">Vehicle settings</string>
     <string name="cd_back">Back</string>
+
+    <string name="vehicle_title">Vehicles</string>
+    <string name="vehicle_subtitle">Switch cars, edit settings, or add another vehicle.</string>
+    <string name="label_car_name">Car name</string>
+    <string name="action_save_vehicle">Save</string>
+    <string name="action_add_car">Add car</string>
+    <string name="action_cancel_add_car">Cancel</string>
+    <string name="vehicle_saved">Vehicle saved</string>
+    <string name="vehicle_added">Car added</string>
+    <string name="vehicle_switched">Switched to %1$s</string>
+    <string name="your_cars">Your cars</string>
+    <string name="add_car_subtitle">Enter details for the new car. We’ll treat the tank as full at this odometer.</string>
+    <string name="full_tank_note">We’ll treat the tank as full at this odometer so FuelCheck can estimate remaining fuel right away.</string>
+    <string name="error_need_car_name">Enter a car name</string>
+    <string name="action_reset_app">Reset app</string>
+    <string name="reset_app_title">Reset app?</string>
+    <string name="reset_app_message">This deletes all fuel data, vehicles, and trip history. This cannot be undone.</string>
+    <string name="reset_app_confirm">Reset</string>
+    <string name="reset_app_cancel">Cancel</string>
+
+    <string name="onboarding_title">Set up your car</string>
+    <string name="onboarding_subtitle">Add your first vehicle so FuelCheck can estimate remaining fuel and range.</string>
+    <string name="action_get_started">Get started</string>
 
     <string name="log_title">Fuel Log</string>
     <string name="log_empty">No fuel entries yet.\nAdd fuel to start your log.</string>
@@ -84,6 +108,6 @@
     <string name="error_need_reading">Calculate or set tank/odometer first</string>
     <string name="error_need_last_reading">Log a fuel update first (Fuel Added)</string>
     <string name="error_exceeds_tank">That would overfill the tank (room for %1$.1f L)</string>
-    <string name="error_need_vehicle">Set consumption and tank capacity first</string>
+    <string name="error_need_vehicle">Set consumption and tank capacity first (car icon)</string>
     <string name="fuel_added_saved">Fuel update saved</string>
 </resources>

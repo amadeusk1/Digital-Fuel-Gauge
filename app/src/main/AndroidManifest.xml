@@ -35,11 +35,19 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".OnboardingActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
             android:name=".FuelAddedActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".LogActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".VehicleActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
 

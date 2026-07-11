@@ -1,6 +1,5 @@
 package com.fuelcheck
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -16,7 +15,6 @@ import kotlin.math.min
 class FuelAddedActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFuelAddedBinding
-    private lateinit var prefs: android.content.SharedPreferences
 
     private var lastFullLocked = false
     private var fullTankSelected = false
@@ -26,7 +24,6 @@ class FuelAddedActivity : AppCompatActivity() {
         binding = ActivityFuelAddedBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         restoreSavedValues()
         updateFuelAmountOptions()
 
@@ -60,10 +57,11 @@ class FuelAddedActivity : AppCompatActivity() {
     }
 
     private fun restoreSavedValues() {
-        val lastFull = prefs.getFloat(KEY_LAST_FULL_KM, Float.NaN)
+        val vehicle = VehicleStore.active(this)
+        val lastFull = vehicle?.lastFullKm ?: Float.NaN
         if (!lastFull.isNaN() && lastFull > 0f) {
             binding.lastFullInput.setText(formatStoredNumber(lastFull.toDouble()))
-            lastFullLocked = prefs.getBoolean(KEY_LAST_FULL_LOCKED, true)
+            lastFullLocked = vehicle?.lastFullLocked == true
         } else {
             lastFullLocked = false
         }
@@ -127,9 +125,10 @@ class FuelAddedActivity : AppCompatActivity() {
         binding.lastFullLayout.error = null
         binding.litersAddedLayout.error = null
 
-        val tankCapacity = prefs.getFloat(KEY_TANK_CAPACITY, Float.NaN)
-        val consumption = prefs.getFloat(KEY_CONSUMPTION, Float.NaN)
-        if (tankCapacity.isNaN() || tankCapacity <= 0f ||
+        val vehicle = VehicleStore.active(this)
+        val tankCapacity = vehicle?.tankCapacity ?: Float.NaN
+        val consumption = vehicle?.consumption ?: Float.NaN
+        if (vehicle == null || tankCapacity.isNaN() || tankCapacity <= 0f ||
             consumption.isNaN() || consumption <= 0f
         ) {
             binding.formError.text = getString(R.string.error_need_vehicle)
@@ -140,22 +139,23 @@ class FuelAddedActivity : AppCompatActivity() {
         val currentKm = readPositive(binding.currentKmLayout, binding.currentKmInput) ?: return
 
         binding.lastFullInput.setText(formatStoredNumber(currentKm))
-        prefs.edit()
-            .putFloat(KEY_LAST_FULL_KM, currentKm.toFloat())
-            .putFloat(KEY_LAST_REMAINING_L, tankCapacity)
-            .putFloat(KEY_LAST_REMAINING_PCT, 100f)
-            .putBoolean(KEY_LAST_FULL_LOCKED, true)
-            .apply()
-
-        FuelLogStore.add(
-            prefs,
-            FuelLogEntry(
-                timestampMs = System.currentTimeMillis(),
-                odometerKm = currentKm,
-                litersAdded = tankCapacity.toDouble(),
-                remainingLiters = tankCapacity.toDouble(),
-                isFullTank = true
-            )
+        val entry = FuelLogEntry(
+            timestampMs = System.currentTimeMillis(),
+            odometerKm = currentKm,
+            litersAdded = tankCapacity.toDouble(),
+            remainingLiters = tankCapacity.toDouble(),
+            isFullTank = true
+        )
+        VehicleStore.save(
+            this,
+            vehicle.copy(
+                lastFullKm = currentKm.toFloat(),
+                lastRemainingL = tankCapacity,
+                lastRemainingPct = 100f,
+                lastFullLocked = true,
+                fuelLog = listOf(entry) + vehicle.fuelLog
+            ),
+            setActive = true
         )
 
         lastFullLocked = true
@@ -172,9 +172,10 @@ class FuelAddedActivity : AppCompatActivity() {
         val added = readPositive(binding.litersAddedLayout, binding.litersAddedInput) ?: return
         val currentKm = readPositive(binding.currentKmLayout, binding.currentKmInput) ?: return
 
-        val tankCapacity = prefs.getFloat(KEY_TANK_CAPACITY, Float.NaN)
-        val consumption = prefs.getFloat(KEY_CONSUMPTION, Float.NaN)
-        if (tankCapacity.isNaN() || tankCapacity <= 0f ||
+        val vehicle = VehicleStore.active(this)
+        val tankCapacity = vehicle?.tankCapacity ?: Float.NaN
+        val consumption = vehicle?.consumption ?: Float.NaN
+        if (vehicle == null || tankCapacity.isNaN() || tankCapacity <= 0f ||
             consumption.isNaN() || consumption <= 0f
         ) {
             binding.formError.text = getString(R.string.error_need_vehicle)
@@ -184,7 +185,7 @@ class FuelAddedActivity : AppCompatActivity() {
 
         val lastReadingRaw = binding.lastFullInput.text?.toString()?.trim().orEmpty()
         val lastReadingKm = lastReadingRaw.toDoubleOrNull()
-        val savedRemaining = prefs.getFloat(KEY_LAST_REMAINING_L, Float.NaN)
+        val savedRemaining = vehicle.lastRemainingL
 
         val remainingBeforeAdd = when {
             lastReadingKm != null && lastReadingKm > 0.0 && !savedRemaining.isNaN() -> {
@@ -219,22 +220,23 @@ class FuelAddedActivity : AppCompatActivity() {
         val percent = (newRemaining / tankCapacity) * 100.0
 
         binding.lastFullInput.setText(formatStoredNumber(currentKm))
-        prefs.edit()
-            .putFloat(KEY_LAST_FULL_KM, currentKm.toFloat())
-            .putBoolean(KEY_LAST_FULL_LOCKED, true)
-            .putFloat(KEY_LAST_REMAINING_L, newRemaining.toFloat())
-            .putFloat(KEY_LAST_REMAINING_PCT, percent.toFloat())
-            .apply()
-
-        FuelLogStore.add(
-            prefs,
-            FuelLogEntry(
-                timestampMs = System.currentTimeMillis(),
-                odometerKm = currentKm,
-                litersAdded = added,
-                remainingLiters = newRemaining,
-                isFullTank = false
-            )
+        val entry = FuelLogEntry(
+            timestampMs = System.currentTimeMillis(),
+            odometerKm = currentKm,
+            litersAdded = added,
+            remainingLiters = newRemaining,
+            isFullTank = false
+        )
+        VehicleStore.save(
+            this,
+            vehicle.copy(
+                lastFullKm = currentKm.toFloat(),
+                lastFullLocked = true,
+                lastRemainingL = newRemaining.toFloat(),
+                lastRemainingPct = percent.toFloat(),
+                fuelLog = listOf(entry) + vehicle.fuelLog
+            ),
+            setActive = true
         )
 
         lastFullLocked = true
