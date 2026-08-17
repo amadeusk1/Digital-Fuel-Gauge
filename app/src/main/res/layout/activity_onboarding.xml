@@ -16,9 +16,9 @@
         android:gravity="center"
         android:text="@string/app_name"
         android:textColor="@color/fuel_primary"
-        android:textSize="26sp"
+        android:textSize="22sp"
         android:textStyle="bold"
-        android:letterSpacing="-0.03" />
+        android:letterSpacing="-0.02" />
 
     <ScrollView
         android:layout_width="match_parent"

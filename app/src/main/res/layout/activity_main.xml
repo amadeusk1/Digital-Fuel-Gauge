@@ -46,9 +46,10 @@
                     android:text="@string/app_name"
                     android:textAlignment="center"
                     android:textColor="@color/fuel_primary"
-                    android:textSize="26sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    android:letterSpacing="-0.03" />
+                    android:maxLines="2"
+                    android:letterSpacing="-0.02" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -114,7 +115,7 @@
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_gauge_glow" />
 
-                <com.fuelcheck.GasGaugeView
+                <com.digitalfuelgauge.GasGaugeView
                     android:id="@+id/gasGauge"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

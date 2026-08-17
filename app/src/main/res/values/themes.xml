@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Fuelcheck" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.DigitalFuelGauge" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/fuel_primary</item>
         <item name="colorPrimaryVariant">@color/fuel_primary_dark</item>
         <item name="colorOnPrimary">@color/fuel_on_primary</item>
