@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FuelCheck</string>
+    <string name="app_name">Digital Fuel Gauge</string>
 
     <string name="section_trip">Trip</string>
     <string name="section_vehicle">Vehicle</string>
@@ -47,7 +47,7 @@
     <string name="vehicle_switched">Switched to %1$s</string>
     <string name="your_cars">Your cars</string>
     <string name="add_car_subtitle">Enter details for the new car. We’ll treat the tank as full at this odometer.</string>
-    <string name="full_tank_note">We’ll treat the tank as full at this odometer so FuelCheck can estimate remaining fuel right away.</string>
+    <string name="full_tank_note">We’ll treat the tank as full at this odometer so Digital Fuel Gauge can estimate remaining fuel right away.</string>
     <string name="error_need_car_name">Enter a car name</string>
     <string name="action_reset_app">Reset app</string>
     <string name="reset_app_title">Reset app?</string>
@@ -56,7 +56,7 @@
     <string name="reset_app_cancel">Cancel</string>
 
     <string name="onboarding_title">Set up your car</string>
-    <string name="onboarding_subtitle">Add your first vehicle so FuelCheck can estimate remaining fuel and range.</string>
+    <string name="onboarding_subtitle">Add your first vehicle so Digital Fuel Gauge can estimate remaining fuel and range.</string>
     <string name="action_get_started">Get started</string>
 
     <string name="log_title">Fuel Log</string>
