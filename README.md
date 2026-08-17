@@ -1,8 +1,8 @@
-# FuelCheck
+# Digital Fuel Gauge
 
 Android app that estimates remaining fuel and range from your odometer, consumption, and tank capacity.
 
-**Download:** [FuelCheck 1.0 APK](https://github.com/amadeusk1/FuelCheck/releases/tag/v1.0)
+**Download:** [Latest release](https://github.com/amadeusk1/FuelCheck/releases/latest)
 
 ## Features
 
@@ -11,6 +11,7 @@ Android app that estimates remaining fuel and range from your odometer, consumpt
 - **Fuel log** — history of fills with date, liters, and odometer
 - **GPS trip tracking** — record distance in the background, then add it to the odometer
 - **Discard confirmation** — choose to apply or discard an active GPS trip
+- **Multi-car** — set up and switch between vehicles
 - **GasBuddy** — quick shortcut to find nearby stations
 
 ## Requirements
@@ -22,8 +23,10 @@ Android app that estimates remaining fuel and range from your odometer, consumpt
 ## Install
 
 1. Open the [latest release](https://github.com/amadeusk1/FuelCheck/releases/latest)
-2. Download `FuelCheck-1.0.apk`
+2. Download the APK
 3. Install on your phone (allow install from unknown sources if asked)
+
+> Note: the app ID is now `com.digitalfuelgauge`. Installing this build next to an older FuelCheck install will appear as a separate app.
 
 ## Build
 
@@ -41,14 +44,15 @@ Release APK:
 
 ## How to use
 
-1. Set **average consumption** (L/100 km) and **tank capacity**
-2. Log a fuel update (partial or full tank) so the app has a starting point
-3. Enter your **current odometer** and tap **Calculate** to refresh remaining fuel and range
+1. On first launch, set up your car (name, consumption, tank capacity, odometer)
+2. Enter your **current odometer** and tap **Calculate** to refresh remaining fuel and range
+3. Log fuel updates as you fill up
 4. Optionally tap the GPS icon to track a trip; stop when done to add kilometres (or discard)
 
 ## Tech
 
 - Kotlin, Material Components, View Binding
+- Package / application ID: `com.digitalfuelgauge`
 - Google Play Services Location
 - Foreground service for background GPS trips
 - Local storage via SharedPreferences
