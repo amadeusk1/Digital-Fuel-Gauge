@@ -12,58 +12,51 @@
     <path
         android:fillColor="#00000000"
         android:pathData="M54,54m-29,0a29,29 0,1 1,58,0a29,29 0,1 1,-58,0"
-        android:strokeWidth="2.6"
+        android:strokeWidth="2.2"
         android:strokeColor="#E6A817" />
 
     <!-- Track: F left -> E right -->
     <path
         android:fillColor="#00000000"
         android:pathData="M33.5,54 A20.5,20.5 0 0 1 74.5,54"
-        android:strokeWidth="6.2"
-        android:strokeColor="#3D3F41"
+        android:strokeWidth="6.4"
+        android:strokeColor="#545658"
         android:strokeLineCap="round" />
 
     <!-- Fuel remaining ~67%. Ends at 300deg, where the needle points. -->
     <path
         android:fillColor="#00000000"
         android:pathData="M33.5,54 A20.5,20.5 0 0 1 64.25,36.25"
-        android:strokeWidth="9.5"
-        android:strokeColor="#E6A817"
-        android:strokeAlpha="0.20"
-        android:strokeLineCap="round" />
-    <path
-        android:fillColor="#00000000"
-        android:pathData="M33.5,54 A20.5,20.5 0 0 1 64.25,36.25"
-        android:strokeWidth="6.2"
+        android:strokeWidth="6.4"
         android:strokeColor="#E6A817"
         android:strokeLineCap="round" />
 
     <!-- Needle aligned to fill end -->
     <path
         android:fillColor="#F2F0EB"
-        android:pathData="M53.68,57.86 L61.63,40.79 L50.82,56.21 Z" />
+        android:pathData="M54.06,58.19 L61.7,40.66 L50.34,56.04 Z" />
 
     <!-- Hub: cream ring + gold center -->
     <path
         android:fillColor="#00000000"
-        android:pathData="M54,54m-4.4,0a4.4,4.4 0,1 1,8.8,0a4.4,4.4 0,1 1,-8.8,0"
-        android:strokeWidth="1.7"
+        android:pathData="M54,54m-4.6,0a4.6,4.6 0,1 1,9.2,0a4.6,4.6 0,1 1,-9.2,0"
+        android:strokeWidth="1.35"
         android:strokeColor="#F2F0EB" />
     <path
         android:fillColor="#E6A817"
-        android:pathData="M54,54m-3.4,0a3.4,3.4 0,1 1,6.8,0a3.4,3.4 0,1 1,-6.8,0" />
+        android:pathData="M54,54m-3.7,0a3.7,3.7 0,1 1,7.4,0a3.7,3.7 0,1 1,-7.4,0" />
 
     <!-- Smooth pump under the hub -->
     <path
         android:fillColor="#F2F0EB"
-        android:pathData="M48.8,62.6H55.3Q56.8,62.6 56.8,64.1V74.1Q56.8,75.6 55.3,75.6H48.8Q47.3,75.6 47.3,74.1V64.1Q47.3,62.6 48.8,62.6Z" />
+        android:pathData="M48.0,63.0H54.2Q55.6,63.0 55.6,64.4V74.0Q55.6,75.4 54.2,75.4H48.0Q46.6,75.4 46.6,74.0V64.4Q46.6,63.0 48.0,63.0Z" />
     <path
         android:fillColor="#1A1C1E"
-        android:pathData="M49.2,64.5h5.6v3.3h-5.6z" />
+        android:pathData="M48.4,64.8h5.4v3.2h-5.4z" />
     <path
         android:fillColor="#F2F0EB"
-        android:pathData="M56.8,65.4C59.4,65.4 61.6,66.4 61.6,69.4C61.6,71.6 62.4,72.8 64,73.2V75.6C61.2,75.1 59.4,73.4 59.4,69.6C59.4,67.6 58.4,67 56.8,67Z" />
+        android:pathData="M55.6,65.5C58.4,65.5 59.8,66.8 59.8,69.4C59.8,71.4 60.6,72.4 62.2,72.6V74.8C59.6,74.4 58.0,72.8 58.0,69.6C58.0,67.4 57.2,67.0 55.6,67.0Z" />
     <path
         android:fillColor="#F2F0EB"
-        android:pathData="M46.7,75.4h10.6v1.6h-10.6z" />
+        android:pathData="M45.8,75.2h10.6v1.6h-10.6z" />
 </vector>
