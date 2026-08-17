@@ -51,7 +51,7 @@
         android:strokeColor="#F2F0EB" />
     <path
         android:fillColor="#E6A817"
-        android:pathData="M54,54m-3.4,0a3.4,4.4 0,1 1,6.8,0a3.4,3.4 0,1 1,-6.8,0" />
+        android:pathData="M54,54m-3.4,0a3.4,3.4 0,1 1,6.8,0a3.4,3.4 0,1 1,-6.8,0" />
 
     <!-- Smooth pump under the hub -->
     <path
