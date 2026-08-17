@@ -1,4 +1,4 @@
-package com.fuelcheck
+package com.digitalfuelgauge
 
 import android.Manifest
 import android.content.ActivityNotFoundException
@@ -18,7 +18,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.fuelcheck.databinding.ActivityMainBinding
+import com.digitalfuelgauge.databinding.ActivityMainBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -100,7 +100,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        prefs = getSharedPreferences(FuelAddedActivity.PREFS_NAME, Context.MODE_PRIVATE)
+        prefs = VehicleStore.prefs(this)
+        VehicleStore.ensureMigrated(this)
         restoreSavedValues()
         updateActiveCarName()
         updateDaysSinceFuel()

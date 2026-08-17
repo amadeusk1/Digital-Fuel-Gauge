@@ -1,4 +1,4 @@
-package com.fuelcheck
+package com.digitalfuelgauge
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -34,8 +34,47 @@ object VehicleStore {
     private const val LEGACY_LAST_REMAINING_PCT = FuelAddedActivity.KEY_LAST_REMAINING_PCT
     private const val LEGACY_FUEL_LOG = "fuel_log"
 
+    private const val LEGACY_PREFS_NAME = "fuelcheck_prefs"
+    private const val KEY_PREFS_FILE_MIGRATED = "prefs_file_migrated"
+
+    fun ensureMigrated(context: Context) {
+        migratePrefsFileIfNeeded(context)
+        migrateIfNeeded(context)
+    }
+
     fun prefs(context: Context): SharedPreferences {
+        migratePrefsFileIfNeeded(context)
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    }
+
+    private fun migratePrefsFileIfNeeded(context: Context) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        if (prefs.getBoolean(KEY_PREFS_FILE_MIGRATED, false)) return
+        if (prefs.all.isNotEmpty()) {
+            prefs.edit().putBoolean(KEY_PREFS_FILE_MIGRATED, true).apply()
+            return
+        }
+
+        val legacy = context.getSharedPreferences(LEGACY_PREFS_NAME, Context.MODE_PRIVATE)
+        if (legacy.all.isEmpty()) {
+            prefs.edit().putBoolean(KEY_PREFS_FILE_MIGRATED, true).apply()
+            return
+        }
+
+        val editor = prefs.edit()
+        legacy.all.forEach { (key, value) ->
+            when (value) {
+                is String -> editor.putString(key, value)
+                is Int -> editor.putInt(key, value)
+                is Long -> editor.putLong(key, value)
+                is Float -> editor.putFloat(key, value)
+                is Boolean -> editor.putBoolean(key, value)
+                is Set<*> -> @Suppress("UNCHECKED_CAST")
+                editor.putStringSet(key, value as Set<String>)
+            }
+        }
+        editor.putBoolean(KEY_PREFS_FILE_MIGRATED, true).commit()
+        legacy.edit().clear().commit()
     }
 
     fun hasVehicles(context: Context): Boolean {

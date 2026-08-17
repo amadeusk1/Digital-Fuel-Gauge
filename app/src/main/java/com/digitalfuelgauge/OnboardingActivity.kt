@@ -1,4 +1,4 @@
-package com.fuelcheck
+package com.digitalfuelgauge
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,7 +7,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
-import com.fuelcheck.databinding.ActivityOnboardingBinding
+import com.digitalfuelgauge.databinding.ActivityOnboardingBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 

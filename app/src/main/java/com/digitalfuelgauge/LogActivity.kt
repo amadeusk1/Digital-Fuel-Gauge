@@ -1,4 +1,4 @@
-package com.fuelcheck
+package com.digitalfuelgauge
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.fuelcheck.databinding.ActivityLogBinding
+import com.digitalfuelgauge.databinding.ActivityLogBinding
 import java.text.DateFormat
 import java.util.Date
 import java.util.Locale

@@ -1,4 +1,4 @@
-package com.fuelcheck
+package com.digitalfuelgauge
 
 import android.animation.ValueAnimator
 import android.content.Context

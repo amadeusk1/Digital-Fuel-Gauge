@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.fuelcheck"
+    namespace = "com.digitalfuelgauge"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.fuelcheck"
+        applicationId = "com.digitalfuelgauge"
         minSdk = 24
         targetSdk = 35
         versionCode = 2

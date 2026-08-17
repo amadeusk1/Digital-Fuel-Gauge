@@ -1,4 +1,4 @@
-package com.fuelcheck
+package com.digitalfuelgauge
 
 import android.os.Bundle
 import android.view.View
@@ -6,7 +6,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.fuelcheck.databinding.ActivityFuelAddedBinding
+import com.digitalfuelgauge.databinding.ActivityFuelAddedBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlin.math.max
@@ -299,7 +299,7 @@ class FuelAddedActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val PREFS_NAME = "fuelcheck_prefs"
+        const val PREFS_NAME = "digital_fuel_gauge_prefs"
         const val KEY_TANK_CAPACITY = "tank_capacity"
         const val KEY_CONSUMPTION = "consumption"
         const val KEY_LAST_FULL_KM = "last_full_km"

@@ -1,4 +1,4 @@
-package com.fuelcheck
+package com.digitalfuelgauge
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -9,6 +9,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.location.Location
@@ -284,8 +285,10 @@ class TripTrackingService : Service() {
         manager.createNotificationChannel(channel)
     }
 
-    private fun prefs() =
-        getSharedPreferences(FuelAddedActivity.PREFS_NAME, MODE_PRIVATE)
+    private fun prefs(): SharedPreferences {
+        VehicleStore.ensureMigrated(this)
+        return VehicleStore.prefs(this)
+    }
 
     private fun hasLocationPermission(): Boolean {
         val fine = ContextCompat.checkSelfPermission(
@@ -311,9 +314,9 @@ class TripTrackingService : Service() {
     companion object {
         const val CHANNEL_ID = "trip_tracking"
         const val NOTIFICATION_ID = 1001
-        const val ACTION_STOP = "com.fuelcheck.action.STOP_TRACKING"
-        const val ACTION_UPDATE = "com.fuelcheck.action.TRACKING_UPDATE"
-        const val ACTION_STOPPED = "com.fuelcheck.action.TRACKING_STOPPED"
+        const val ACTION_STOP = "com.digitalfuelgauge.action.STOP_TRACKING"
+        const val ACTION_UPDATE = "com.digitalfuelgauge.action.TRACKING_UPDATE"
+        const val ACTION_STOPPED = "com.digitalfuelgauge.action.TRACKING_STOPPED"
         const val EXTRA_METERS = "meters"
         const val EXTRA_APPLY_DISTANCE = "apply_distance"
         const val KEY_PENDING_GPS_KM = "pending_gps_km"

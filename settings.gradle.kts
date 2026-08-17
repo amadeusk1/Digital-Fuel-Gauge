@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Fuelcheck"
+rootProject.name = "DigitalFuelGauge"
 include(":app")
