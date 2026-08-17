@@ -8,7 +8,7 @@ Needs Android 7+. GPS trips need location access (and a notification permission 
 
 You can run more than one car, log fills, check history, track a trip with GPS, and jump to GasBuddy for stations.
 
-**Note:** the app id is `com.digitalfuelgauge`, so this won’t overwrite an old FuelCheck install — it’ll show up as a second app.
+**Note:** the app id is `com.digitalfuelgauge`, so this won’t overwrite an older install from before the rename — it’ll show up as a second app.
 
 ### Build
 
