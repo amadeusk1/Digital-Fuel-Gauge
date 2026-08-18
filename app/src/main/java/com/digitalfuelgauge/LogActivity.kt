@@ -1,5 +1,6 @@
 package com.digitalfuelgauge
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,9 @@ class LogActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.backButton.setOnClickListener { finish() }
+        binding.statsButton.setOnClickListener {
+            startActivity(Intent(this, StatsActivity::class.java))
+        }
 
         binding.logList.layoutManager = LinearLayoutManager(this)
         refreshList()

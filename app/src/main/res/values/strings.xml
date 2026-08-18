@@ -31,6 +31,7 @@
     <string name="option_selected_mark">✓</string>
     <string name="cd_gas_stations">Open GasBuddy</string>
     <string name="cd_log">Fuel log</string>
+    <string name="cd_stats">Fuel stats</string>
     <string name="cd_gps">Track kilometres with GPS</string>
     <string name="cd_gps_stop">Stop GPS tracking and add kilometres</string>
     <string name="cd_vehicle">Vehicle settings</string>
@@ -68,6 +69,37 @@
     <string name="log_label_odometer">Odometer</string>
     <string name="log_value_fuel_added">%1$.1f L</string>
     <string name="log_value_odometer">%1$.0f km</string>
+
+    <string name="stats_title">Fuel Stats</string>
+    <string name="stats_empty">No fuel entries yet.\nAdd fuel to start seeing stats.</string>
+    <string name="stats_need_more">Add another fuel-up to see days and distance between fills.</string>
+    <string name="stats_hero_label">You usually fill up every</string>
+    <string name="stats_hero_distance">About %1$.0f km between fills</string>
+    <string name="stats_section_interval">Days between fills</string>
+    <string name="stats_section_distance">Distance</string>
+    <string name="stats_section_fuel">Fuel</string>
+    <string name="stats_section_between">Each fill-up</string>
+    <string name="stats_last_gap">Last interval</string>
+    <string name="stats_since_last">Since last fill</string>
+    <string name="stats_shortest_gap">Shortest</string>
+    <string name="stats_longest_gap">Longest</string>
+    <string name="stats_avg_distance">Avg between fills</string>
+    <string name="stats_last_distance">Last stretch</string>
+    <string name="stats_total_distance">Total logged</string>
+    <string name="stats_distance_range">Shortest–longest</string>
+    <string name="stats_total_fuel">Total added</string>
+    <string name="stats_avg_fill">Avg fill</string>
+    <string name="stats_fills">Fills</string>
+    <string name="stats_fill_mix">Full / partial</string>
+    <string name="stats_fill_mix_value">%1$d full · %2$d partial</string>
+    <string name="stats_days">%1$s days</string>
+    <string name="stats_days_one">1 day</string>
+    <string name="stats_km">%1$.0f km</string>
+    <string name="stats_km_range">%1$.0f–%2$.0f km</string>
+    <string name="stats_liters">%1$.1f L</string>
+    <string name="stats_dash">—</string>
+    <string name="stats_interval_dates">%1$s → %2$s</string>
+    <string name="stats_interval_values">%1$s · %2$s</string>
 
     <string name="gps_tracking">GPS tracking · +%1$.1f km</string>
     <string name="gps_added">Added %1$.1f km from GPS</string>

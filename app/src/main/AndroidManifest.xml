@@ -46,6 +46,10 @@
             android:exported="false"
             android:parentActivityName=".MainActivity" />
         <activity
+            android:name=".StatsActivity"
+            android:exported="false"
+            android:parentActivityName=".LogActivity" />
+        <activity
             android:name=".VehicleActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
