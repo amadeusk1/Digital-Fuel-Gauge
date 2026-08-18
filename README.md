@@ -2,11 +2,11 @@
 
 Tracks how much fuel you've got left and roughly how far you can go, based on odometer, consumption, and tank size.
 
-[Download the latest APK](https://github.com/amadeusk1/Digital-Fuel-Gauge/releases/latest)
+**Site:** [amadeusk1.github.io/Digital-Fuel-Gauge](https://amadeusk1.github.io/Digital-Fuel-Gauge/)
+
+[Download the latest APK](https://amadeusk1.github.io/Digital-Fuel-Gauge/releases.html) · [Privacy Policy](https://amadeusk1.github.io/Digital-Fuel-Gauge/privacy-policy.html)
 
 Needs Android 7+. GPS trips need location access (and a notification permission on Android 13+).
-
-[Privacy Policy](docs/privacy-policy.html) (required for Google Play)
 
 You can run more than one car, log fills, check history, track a trip with GPS, and jump to GasBuddy for stations.
 
