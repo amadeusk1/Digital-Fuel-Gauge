@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy Policy — Digital Fuel Gauge</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0f1419;
+      --card: #1a2128;
+      --text: #e8eef4;
+      --muted: #9aa8b4;
+      --accent: #3dd68c;
+      --line: #2a343d;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f4f6f8;
+        --card: #ffffff;
+        --text: #1a2128;
+        --muted: #5c6b76;
+        --accent: #0d8a4f;
+        --line: #e2e8ed;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    h1 { font-size: 1.85rem; margin: 0 0 8px; letter-spacing: -0.02em; }
+    h2 { font-size: 1.2rem; margin: 36px 0 12px; }
+    p, li { color: var(--text); }
+    .meta { color: var(--muted); margin: 0 0 28px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin: 16px 0 24px;
+    }
+    a { color: var(--accent); }
+    ul { padding-left: 1.2rem; }
+    li { margin: 6px 0; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Privacy Policy</h1>
+    <p class="meta">Digital Fuel Gauge (Android)<br>Last updated: August 18, 2026</p>
+
+    <p>
+      This policy describes how the Android app <strong>Digital Fuel Gauge</strong>
+      (“the App”) handles information. The App is a local fuel and trip tracker.
+      It does not require an account and does not operate its own servers.
+    </p>
+
+    <div class="card">
+      <strong>Short version:</strong> Vehicle details, fuel logs, and trip
+      distances stay on your device. Location is used only while you run a GPS
+      trip, to measure distance. Coordinates are not saved. The App has no ads
+      and does not sell your data.
+    </div>
+
+    <h2>Information we store on your device</h2>
+    <p>You provide this information, and it is saved in the App’s local storage:</p>
+    <ul>
+      <li>Vehicle names and settings (consumption, tank capacity)</li>
+      <li>Odometer readings and estimated remaining fuel</li>
+      <li>Fuel-up history (date, odometer, liters added, remaining fuel, full-tank flag)</li>
+      <li>Distance from a GPS trip (kilometers only), used to update the odometer</li>
+    </ul>
+    <p>
+      We do not collect your name, email, phone number, contacts, photos, or
+      payment information.
+    </p>
+
+    <h2>Location</h2>
+    <p>
+      The App requests <strong>precise and approximate location</strong> so you
+      can optionally track a trip with GPS. Location is used only to calculate
+      how far you have driven during an active trip.
+    </p>
+    <ul>
+      <li>Tracking starts only when you turn it on.</li>
+      <li>While a trip is active, a foreground notification is shown and location is read in the foreground.</li>
+      <li>The App does not request background location when a trip is not running.</li>
+      <li>Raw coordinates are processed in memory and are <strong>not stored</strong>. Only the resulting trip distance may be saved on the device.</li>
+      <li>You can deny location permission. Fuel logging and remaining-fuel estimates still work without GPS.</li>
+    </ul>
+    <p>
+      Location is obtained through Google Play services’ location APIs on your
+      device. Google’s handling of that data is described in the
+      <a href="https://policies.google.com/privacy">Google Privacy Policy</a>.
+    </p>
+
+    <h2>Notifications</h2>
+    <p>
+      On Android 13 and later, the App may ask for notification permission so it
+      can show the ongoing GPS trip notification. Notifications are not used for
+      marketing.
+    </p>
+
+    <h2>How information is used</h2>
+    <p>On-device data is used only to:</p>
+    <ul>
+      <li>Estimate remaining fuel and driving range</li>
+      <li>Keep a fuel history for each vehicle</li>
+      <li>Add GPS trip distance to your odometer when you end a trip</li>
+    </ul>
+
+    <h2>Sharing</h2>
+    <p>
+      We do not sell, rent, or share your App data with third parties for
+      advertising or analytics. The App does not include ads or analytics SDKs.
+    </p>
+    <p>Information may leave the App only in these cases:</p>
+    <ul>
+      <li>
+        <strong>Device backup.</strong> Android backup (if enabled on your
+        device) may include App storage in your Google account backup.
+      </li>
+      <li>
+        <strong>GasBuddy (optional).</strong> If you open nearby stations, the
+        App launches the GasBuddy app or website. The App does not send your
+        location, vehicles, or fuel logs to GasBuddy. GasBuddy is a separate
+        service with its own privacy policy.
+      </li>
+      <li>
+        <strong>Legal requests.</strong> We have no user database to produce.
+        Any disclosure would be limited to what the law requires of us as the
+        developer.
+      </li>
+    </ul>
+
+    <h2>Retention and deletion</h2>
+    <p>
+      Data stays on your device until you delete it. You can remove it by
+      clearing the App’s storage in Android settings or by uninstalling the App.
+    </p>
+
+    <h2>Children</h2>
+    <p>
+      The App is not directed at children under 13, and we do not knowingly
+      collect personal information from children.
+    </p>
+
+    <h2>Security</h2>
+    <p>
+      Data is stored in the App’s private storage on your device. We do not
+      operate a cloud account for the App. No method of storage is completely
+      secure; keep your device locked and updated.
+    </p>
+
+    <h2>Changes</h2>
+    <p>
+      If this policy changes, we will update the “Last updated” date on this
+      page. Continued use of the App after a change means you accept the updated
+      policy.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      Questions about this policy or the App:
+      <a href="mailto:contact@amadeusk.dev">contact@amadeusk.dev</a>
+    </p>
+  </main>
+</body>
+</html>
